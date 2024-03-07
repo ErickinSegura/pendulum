@@ -2,6 +2,7 @@ package pdl.insegura;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.PendulumCommand;
+import pdl.insegura.listeners.MobsListeners;
 import pdl.insegura.listeners.PlayerListeners;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.items.ItemsRecipes;
@@ -16,6 +17,7 @@ public class PendulumPlugin extends JavaPlugin {
         registerEvents();
         registerRecipes();
         registerCommands();
+        registerEventsMobs();
 
 
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
@@ -36,6 +38,10 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
     }
 
+    public  void registerEventsMobs(){
+        getServer().getPluginManager().registerEvents(new MobsListeners(), this);
+    }
+
     public void registerRecipes(){
         ItemsRecipes recipes = new ItemsRecipes();
         recipes.recipes();
@@ -44,6 +50,8 @@ public class PendulumPlugin extends JavaPlugin {
     public void registerCommands(){
         getServer().getPluginCommand("pendulum").setExecutor(new PendulumCommand());
     }
+
+
 
 
 

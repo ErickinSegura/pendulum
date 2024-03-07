@@ -29,10 +29,6 @@ public class PendulumCommand implements CommandExecutor {
             sender.sendMessage(MessageUtils.colorMessage("      Jugadores: &d" + getServer().getOnlinePlayers().size()));
             sender.sendMessage(MessageUtils.colorMessage("      Equipo: &dPlaceholder"));
             sender.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
-
-
-
-
             return true;
         }
 
@@ -45,6 +41,7 @@ public class PendulumCommand implements CommandExecutor {
             sender.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
             return true;
         }
+
 
         if (args[0].equalsIgnoreCase("entregar")) {
             if(player.getInventory().contains(Material.SUGAR_CANE, 320) && player.getScoreboard().getObjective("reto").getScore(player.getName()).getScore() == 0){
@@ -67,10 +64,12 @@ public class PendulumCommand implements CommandExecutor {
             return true;
         }
 
+
         if (args[0].equalsIgnoreCase("check")) {
             ((Player) sender).performCommand("ptl check");
             return true;
         }
+
 
         if (args[0].equalsIgnoreCase("time")) {
             ((Player) sender).performCommand("ptl info");
@@ -89,8 +88,6 @@ public class PendulumCommand implements CommandExecutor {
             sender.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
             return true;
         }
-
-
 
 
         return true;
