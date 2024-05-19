@@ -1,4 +1,5 @@
 package pdl.insegura;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.PendulumCommand;
@@ -6,17 +7,16 @@ import pdl.insegura.listeners.PlayerListeners;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.items.ItemsRecipes;
 
-
 public class PendulumPlugin extends JavaPlugin {
 
     public static String prefix = "&d&lPendulum&r";
     private String version = getDescription().getVersion();
 
-    public void onEnable(){
+    @Override
+    public void onEnable() {
         registerEvents();
         registerRecipes();
         registerCommands();
-
 
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("       &l[" + prefix + "&l]"));
@@ -25,28 +25,25 @@ public class PendulumPlugin extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
     }
 
-    public void onDisable(){
+    @Override
+    public void onDisable() {
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("       &l[" + prefix + "&l]"));
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("       &l&dPlugin disabled!"));
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
     }
 
-    public void registerEvents(){
+    private void registerEvents() {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+        getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
     }
 
-    public void registerRecipes(){
-        ItemsRecipes recipes = new ItemsRecipes();
+    private void registerRecipes() {
+        ItemsRecipes recipes = new ItemsRecipes(this);
         recipes.recipes();
     }
 
-    public void registerCommands(){
+    private void registerCommands() {
         getServer().getPluginCommand("pendulum").setExecutor(new PendulumCommand());
     }
-
-
-
-
-
 }
