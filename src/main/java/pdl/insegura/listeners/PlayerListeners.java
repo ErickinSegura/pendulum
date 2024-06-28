@@ -11,13 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
-import pdl.insegura.utils.QoLUtils;
 
 import static org.bukkit.Bukkit.*;
 
 public class PlayerListeners implements Listener {
-    QoLUtils qol = new QoLUtils();
+
     private String[] jugadoresConVida18 = {""};
 
 
@@ -49,6 +49,9 @@ public class PlayerListeners implements Listener {
         if (player.getKiller() == null) {
             getServer().broadcastMessage(MessageUtils.colorMessage("Coordenadas de Muerte: &l" + location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ()));
         }
+
+        // Mensaje Custom de muerte
+        getServer().broadcastMessage(MessageUtils.colorMessage(DeathMessages.getInstance().getDeathMessage(player.getName())));
 
         // Place head
         Block fence = location.getBlock();

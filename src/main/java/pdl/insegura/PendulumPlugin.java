@@ -4,8 +4,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.PendulumCommand;
 import pdl.insegura.listeners.PlayerListeners;
+import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.items.ItemsRecipes;
+import pdl.insegura.utils.PendulumSettings;
 
 public class PendulumPlugin extends JavaPlugin {
 
@@ -15,6 +17,7 @@ public class PendulumPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         PendulumSettings.getInstance().load();
+        DeathMessages.getInstance().load();
         registerEvents();
         registerRecipes();
         registerCommands();

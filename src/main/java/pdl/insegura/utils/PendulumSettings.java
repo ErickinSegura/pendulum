@@ -1,8 +1,9 @@
-package pdl.insegura;
+package pdl.insegura.utils;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import pdl.insegura.PendulumPlugin;
 
 import java.io.File;
 

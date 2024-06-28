@@ -10,10 +10,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
-import pdl.insegura.PendulumSettings;
+import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.utils.MessageUtils;
 
-import static org.bukkit.Bukkit.getConsoleSender;
 import static org.bukkit.Bukkit.getServer;
 
 public class PendulumCommand implements CommandExecutor {
