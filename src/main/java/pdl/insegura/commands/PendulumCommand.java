@@ -1,5 +1,6 @@
 package pdl.insegura.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -9,17 +10,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
+import pdl.insegura.PendulumSettings;
 import pdl.insegura.utils.MessageUtils;
 
+import static org.bukkit.Bukkit.getConsoleSender;
 import static org.bukkit.Bukkit.getServer;
 
 public class PendulumCommand implements CommandExecutor {
-    public static String reto = "Placeholder";
-    public static String recom = "Placeholder";
-    public static String castigo = "Placeholder";
-    public static final Material RETO_MATERIAL = Material.SUGAR_CANE;
-    public static final int RETO_CANTIDAD = 320;
-    public static final ItemStack RECOMPENSA = new ItemStack(Material.TOTEM_OF_UNDYING, 2);
+    public static String reto = PendulumSettings.getInstance().getDesafio();
+    public static String recom = PendulumSettings.getInstance().getPremio();
+    public static String castigo = PendulumSettings.getInstance().getCastigo();
+    public static final Material RETO_MATERIAL = PendulumSettings.getInstance().getMaterialDesafio();
+    public static final int RETO_CANTIDAD = PendulumSettings.getInstance().getCantidadDesafio();
+    public static final ItemStack RECOMPENSA = PendulumSettings.getInstance().getStackPremio();
+    public static String[] RETOS = PendulumSettings.getInstance().getRetos();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -35,7 +39,9 @@ public class PendulumCommand implements CommandExecutor {
             return true;
         }
 
-        switch (args[0].toLowerCase()) {
+        String subCommand = args[0].toLowerCase();
+
+        switch (subCommand) {
             case "reto":
                 mostrarReto(player);
                 break;
@@ -51,12 +57,22 @@ public class PendulumCommand implements CommandExecutor {
             case "help":
                 mostrarAyuda(player);
                 break;
+            case "ruleta":
+                if (player.getName().equals("iPancrema")) {
+                    ruleta();
+                } else {
+                    player.sendMessage("&cNo puedes ejecutar este comando");
+                }
+                break;
             default:
                 sender.sendMessage(MessageUtils.colorMessage("&cComando no reconocido. Usa /pendulum help para ver los comandos disponibles."));
-                break;
+                return true;
         }
+
         return true;
     }
+
+
 
     private void mostrarInformacionGeneral(Player player) {
         Team team = player.getScoreboard().getEntryTeam(player.getName());
@@ -68,7 +84,7 @@ public class PendulumCommand implements CommandExecutor {
         player.sendMessage(MessageUtils.colorMessage("      &l[&d&lPendulum&r&l]"));
         player.sendMessage(MessageUtils.colorMessage("      Dia: &d" + getServer().getWorld("world").getFullTime() / 24000));
         player.sendMessage(MessageUtils.colorMessage("      Jugadores: &d" + getServer().getOnlinePlayers().size()));
-        player.sendMessage(MessageUtils.colorMessage("      Equipo: &d" + equipo));
+        player.sendMessage(MessageUtils.colorMessage("      Equipo: " + equipo));
         player.sendMessage(MessageUtils.colorMessage("      Reto: &d" + (retoCumplido ? "Cumplido" : "No cumplido")));
         player.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
     }
@@ -112,5 +128,25 @@ public class PendulumCommand implements CommandExecutor {
         player.sendMessage(MessageUtils.colorMessage("&l> time &d- &rMuestra datos del reinicio de tiempo."));
         player.sendMessage(MessageUtils.colorMessage("&l> help &d- &rMuestra este mensaje."));
         player.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
+    }
+
+    private void ruleta() {
+        // Random int del 1 al 10
+        int random = (int) (Math.random() * 10) + 1;
+        getServer().broadcastMessage(MessageUtils.colorMessage("&l[&d&lPendulum&r&l]&r Seleccionando reto del bloque"));
+
+        for (int i = 0; i <= 10; i++) {
+            try {
+                for (Player players : Bukkit.getOnlinePlayers())
+                {
+                    //Player the sound for  player
+                    players.playSound(players.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+                }
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        getServer().broadcastMessage(MessageUtils.colorMessage("&l[&d&lPendulum&r&l]&r El reto es &l"+ RETOS[random]));
     }
 }

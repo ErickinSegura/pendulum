@@ -1,0 +1,25 @@
+# Configuración de Pendulum
+
+# Reto de la semana
+reto:
+  desafio: "Consigue 320 cañas de azúcar"
+  premio: "2 tótems de la inmortalidad"
+  castigo: "Perderá tu equipo 1 contenedor de vida"
+  cantidadDesafio: 320
+  cantidadPremio: 2
+  materialDesafio: SUGAR_CANE
+  materialPremio: TOTEM_OF_UNDYING
+  # Lista de retos de la semana, deben de ser 10
+  retos:
+    - "Consigue 1 cañas de azúcar"
+    - "Consigue 2 cañas de azúcar"
+    - "Consigue 3 cañas de azúcar"
+    - "Consigue 4 cañas de azúcar"
+    - "Consigue 5 cañas de azúcar"
+    - "Consigue 6 cañas de azúcar"
+    - "Consigue 7 cañas de azúcar"
+    - "Consigue 8 cañas de azúcar"
+    - "Consigue 9 cañas de azúcar"
+    - "Consigue 10 cañas de azúcar"
+
+

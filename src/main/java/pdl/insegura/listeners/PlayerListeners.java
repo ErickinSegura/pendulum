@@ -36,7 +36,13 @@ public class PlayerListeners implements Listener {
         }
 
         // Play death sound to all players
-        getServer().dispatchCommand(getServer().getConsoleSender(), "playsound minecraft:muerte master @a " + location.getX() + " " + location.getY() + " " + location.getZ());
+        //getServer().dispatchCommand(getServer().getConsoleSender(), "playsound minecraft:muerte master @a " + location.getX() + " " + location.getY() + " " + location.getZ());
+
+        for (Player players : Bukkit.getOnlinePlayers())
+        {
+            //Player the sound for  player
+            players.playSound(players.getLocation(), "minecraft:muerte", 1, 1);
+        }
 
         // Broadcast death message
         getServer().broadcastMessage(MessageUtils.colorMessage("&dA &5&l" + player.getName() + "&r&d se le ha acabado el tiempo..."));

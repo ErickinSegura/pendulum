@@ -14,6 +14,7 @@ public class PendulumPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        PendulumSettings.getInstance().load();
         registerEvents();
         registerRecipes();
         registerCommands();
@@ -45,5 +46,9 @@ public class PendulumPlugin extends JavaPlugin {
 
     private void registerCommands() {
         getServer().getPluginCommand("pendulum").setExecutor(new PendulumCommand());
+    }
+
+    public static PendulumPlugin getInstance(){
+        return JavaPlugin.getPlugin(PendulumPlugin.class);
     }
 }

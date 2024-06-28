@@ -75,7 +75,6 @@ public class ItemsRecipes implements Listener {
                 CreatureSpawner spawner = (CreatureSpawner) block.getState();
                 spawner.getPersistentDataContainer().set(spawnerKey, PersistentDataType.BYTE, (byte) 1);
                 spawner.setDelay(Integer.MAX_VALUE);
-
                 spawner.setRequiredPlayerRange(0);
                 spawner.update();
             }
@@ -90,7 +89,7 @@ public class ItemsRecipes implements Listener {
             if (spawner.getPersistentDataContainer().has(spawnerKey, PersistentDataType.BYTE)) {
                 event.setDropItems(false); // Evita que el spawner normal caiga
                 event.setExpToDrop(0);
-                block.getWorld().dropItemNaturally(block.getLocation(), oroDoble);
+                block.getWorld().dropItemNaturally(block.getLocation(), new ItemStack(Material.GOLD_BLOCK, 2));
             }
         }
     }
