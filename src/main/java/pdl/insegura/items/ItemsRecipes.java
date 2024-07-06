@@ -71,7 +71,7 @@ public class ItemsRecipes implements Listener {
         ItemStack s = new ItemStack(Material.ENCHANTED_GOLDEN_APPLE);
         ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("gapp"), s);
         recipe.shape("GGG", "GAG", "GGG");
-        recipe.setIngredient('G', Material.SPAWNER);
+        recipe.setIngredient('G', Material.POPPED_CHORUS_FRUIT);
         recipe.setIngredient('A', Material.APPLE);
         plugin.getServer().addRecipe(recipe);
     }

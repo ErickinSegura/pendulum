@@ -31,6 +31,8 @@ public class VoidedArmor {
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
         AttributeModifier modifier4 = new AttributeModifier(UUID.randomUUID(),"generic.movement_speed", 0.005, AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier4);
+        AttributeModifier modifier5 = new AttributeModifier(UUID.randomUUID(), "generic.maxHealth", 2, AttributeModifier.Operation.ADD_NUMBER, slot);
+        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, modifier5);
         meta.addEnchant(Enchantment.DURABILITY, 6, true);
         s.setItemMeta(meta);
         return s;
@@ -49,6 +51,8 @@ public class VoidedArmor {
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
         AttributeModifier modifier4 = new AttributeModifier(UUID.randomUUID(),"generic.movement_speed", 0.005, AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier4);
+        AttributeModifier modifier5 = new AttributeModifier(UUID.randomUUID(), "generic.maxHealth", 2, AttributeModifier.Operation.ADD_NUMBER, slot);
+        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, modifier5);
         meta.addEnchant(Enchantment.DURABILITY, 6, true);
         s.setItemMeta(meta);
         return s;
@@ -67,6 +71,8 @@ public class VoidedArmor {
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
         AttributeModifier modifier4 = new AttributeModifier(UUID.randomUUID(),"generic.movement_speed", 0.005, AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier4);
+        AttributeModifier modifier5 = new AttributeModifier(UUID.randomUUID(), "generic.maxHealth", 2, AttributeModifier.Operation.ADD_NUMBER, slot);
+        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, modifier5);
         meta.addEnchant(Enchantment.DURABILITY, 6, true);
         s.setItemMeta(meta);
         return s;
@@ -85,6 +91,8 @@ public class VoidedArmor {
         meta.addAttributeModifier(Attribute.GENERIC_KNOCKBACK_RESISTANCE, modifier3);
         AttributeModifier modifier4 = new AttributeModifier(UUID.randomUUID(),"generic.movement_speed", 0.005, AttributeModifier.Operation.ADD_NUMBER, slot);
         meta.addAttributeModifier(Attribute.GENERIC_MOVEMENT_SPEED, modifier4);
+        AttributeModifier modifier5 = new AttributeModifier(UUID.randomUUID(), "generic.maxHealth", 2, AttributeModifier.Operation.ADD_NUMBER, slot);
+        meta.addAttributeModifier(Attribute.GENERIC_MAX_HEALTH, modifier5);
         meta.addEnchant(Enchantment.DURABILITY, 6, true);
         s.setItemMeta(meta);
         return s;
