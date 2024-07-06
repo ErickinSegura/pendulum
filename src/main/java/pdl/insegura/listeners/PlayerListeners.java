@@ -25,8 +25,6 @@ import pdl.insegura.PendulumPlugin;
 import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
-
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -54,6 +52,20 @@ public class PlayerListeners implements Listener {
         // Play death sound to all players
         for (Player players : Bukkit.getOnlinePlayers()) {
             players.playSound(players.getLocation(), "minecraft:muerte", 1, 1);
+        }
+
+        if(PendulumSettings.getInstance().getDia() >= 10) {
+            if(player.getScoreboard().getEntryTeam(player.getName()) != null) {
+                player.getScoreboard().getEntryTeam(player.getName()).getEntries().forEach(entry -> {
+                    Player teamMember = Bukkit.getPlayer(entry);
+                    if (teamMember != null && teamMember.isOnline()) {
+                        teamMember.sendMessage(MessageUtils.colorMessage("&d&lPor la muerte de alguien de tu equipo perdiste todos tus efectos de poción..."));
+                        for (PotionEffect effect : teamMember.getActivePotionEffects()) {
+                            teamMember.removePotionEffect(effect.getType());
+                        }
+                    }
+                });
+            }
         }
 
         // Broadcast death message
