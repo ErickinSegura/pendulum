@@ -2,14 +2,23 @@ package pdl.insegura.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Team;
+import pdl.insegura.PendulumPlugin;
+import pdl.insegura.items.customs.PendulumItems;
+import pdl.insegura.items.customs.netherite.AgileNetherite;
+import pdl.insegura.items.customs.netherite.ReinforcedNetherite;
+import pdl.insegura.items.customs.voided.VoidedArmor;
+import pdl.insegura.items.customs.voided.VoidedItems;
 import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.utils.MessageUtils;
 
@@ -56,12 +65,18 @@ public class PendulumCommand implements CommandExecutor {
             case "help":
                 mostrarAyuda(player);
                 break;
+            case "resetcontador":
+                resetContador(player);
+                break;
             case "ruleta":
                 if (player.getName().equals("iPancrema")) {
                     ruleta();
                 } else {
                     player.sendMessage("&cNo puedes ejecutar este comando");
                 }
+                break;
+            case "give":
+                give(args, player);
                 break;
             default:
                 sender.sendMessage(MessageUtils.colorMessage("&cComando no reconocido. Usa /pendulum help para ver los comandos disponibles."));
@@ -71,8 +86,6 @@ public class PendulumCommand implements CommandExecutor {
         return true;
     }
 
-
-
     private void mostrarInformacionGeneral(Player player) {
         Team team = player.getScoreboard().getEntryTeam(player.getName());
         String equipo = (team != null) ? team.getPrefix() : "Sin equipo";
@@ -81,7 +94,7 @@ public class PendulumCommand implements CommandExecutor {
 
         player.sendMessage(MessageUtils.colorMessage("&d&m                                          "));
         player.sendMessage(MessageUtils.colorMessage("      &l[&d&lPendulum&r&l]"));
-        player.sendMessage(MessageUtils.colorMessage("      Dia: &d" + getServer().getWorld("world").getFullTime() / 24000));
+        player.sendMessage(MessageUtils.colorMessage("      Bloque de días: &d" +  PendulumSettings.getInstance().getDia()));
         player.sendMessage(MessageUtils.colorMessage("      Jugadores: &d" + getServer().getOnlinePlayers().size()));
         player.sendMessage(MessageUtils.colorMessage("      Equipo: " + equipo));
         player.sendMessage(MessageUtils.colorMessage("      Reto: &d" + (retoCumplido ? "Cumplido" : "No cumplido")));
@@ -147,5 +160,78 @@ public class PendulumCommand implements CommandExecutor {
             }
         }
         getServer().broadcastMessage(MessageUtils.colorMessage("&l[&d&lPendulum&r&l]&r El reto es &l"+ RETOS[random]));
+    }
+
+    private void resetContador(Player player) {
+        PersistentDataContainer data = player.getPersistentDataContainer();
+        NamespacedKey key = new NamespacedKey(PendulumPlugin.getInstance(), "DirtyCount");
+        data.remove(key);
+        player.sendMessage(MessageUtils.colorMessage("&aTu contador de Dirty Hearthy ha sido reiniciado."));
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20.0);
+
+    }
+
+    private void give(String[] args, Player player) {
+        String subCommand = "";
+        if (!player.getName().equals("iPancrema")) {
+            player.sendMessage(MessageUtils.colorMessage("&cNo puedes usar este comando"));
+            return;
+        }
+
+        try {
+            subCommand = args[1].toLowerCase();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        switch (subCommand) {
+            case "nether_armors":
+                player.getInventory().addItem(AgileNetherite.CrearAgiHelmet());
+                player.getInventory().addItem(AgileNetherite.CrearAgiChestplate());
+                player.getInventory().addItem(AgileNetherite.CrearAgiLeggings());
+                player.getInventory().addItem(AgileNetherite.CrearAgiBoots());
+
+                player.getInventory().addItem(ReinforcedNetherite.CrearReinHelmet());
+                player.getInventory().addItem(ReinforcedNetherite.CrearReinChestplate());
+                player.getInventory().addItem(ReinforcedNetherite.CrearReinLeggings());
+                player.getInventory().addItem(ReinforcedNetherite.CrearReinBoots());
+
+                player.sendMessage("Se te añadieron Netherite Armors");
+                break;
+            case "voided_armor":
+                player.getInventory().addItem(VoidedArmor.CrearVoidHelmet());
+                player.getInventory().addItem(VoidedArmor.CrearVoidChestplate());
+                player.getInventory().addItem(VoidedArmor.CrearVoidLeggings());
+                player.getInventory().addItem(VoidedArmor.CrearVoidBoots());
+
+                player.sendMessage("Se te añadio Voided Armor");
+                break;
+            case "voided_items":
+                player.getInventory().addItem(VoidedItems.CrearVoidedShard());
+                player.getInventory().addItem(VoidedItems.CrearVoidedIngot());
+                player.getInventory().addItem(VoidedItems.CrearVoidedApple());
+                player.getInventory().addItem(VoidedItems.CrearVoidedPick());
+                player.getInventory().addItem(VoidedItems.CrearVoidedSword());
+
+                player.sendMessage("Se te añadio Voided Items");
+                break;
+
+            case "pendu_items":
+                player.getInventory().addItem(PendulumItems.CrearDirtyHearty());
+                player.getInventory().addItem(PendulumItems.CrearOroDoble());
+
+                player.sendMessage("Se te añadio Pendulum Items");
+                break;
+
+            default:
+                player.sendMessage("Las opciones son");
+                player.sendMessage("nether_armors");
+                player.sendMessage("voided_armor");
+                player.sendMessage("voided_items");
+                player.sendMessage("pendu_items");
+                player.sendMessage("");
+                break;
+        }
     }
 }

@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.PendulumCommand;
 import pdl.insegura.listeners.PlayerListeners;
+import pdl.insegura.listeners.mobs.MobListener;
+import pdl.insegura.listeners.mobs.SpawnListener;
 import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.items.ItemsRecipes;
@@ -14,6 +16,10 @@ public class PendulumPlugin extends JavaPlugin {
     public static String prefix = "&d&lPendulum&r";
     private String version = getDescription().getVersion();
 
+    public static Object getPlugin() {
+        return null;
+    }
+
     @Override
     public void onEnable() {
         PendulumSettings.getInstance().load();
@@ -21,6 +27,7 @@ public class PendulumPlugin extends JavaPlugin {
         registerEvents();
         registerRecipes();
         registerCommands();
+        registerEventsMobs();
 
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&d&m                                          "));
         Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("       &l[" + prefix + "&l]"));
@@ -40,11 +47,18 @@ public class PendulumPlugin extends JavaPlugin {
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
+
     }
 
     private void registerRecipes() {
         ItemsRecipes recipes = new ItemsRecipes(this);
         recipes.recipes();
+
+    }
+
+    public void registerEventsMobs(){
+        getServer().getPluginManager().registerEvents(new MobListener(), this);
+        getServer().getPluginManager().registerEvents(new SpawnListener(), this);
     }
 
     private void registerCommands() {

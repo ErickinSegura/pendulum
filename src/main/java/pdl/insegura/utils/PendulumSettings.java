@@ -12,12 +12,12 @@ public class PendulumSettings {
 
     private File file;
     private YamlConfiguration config;
-
-    private String[] retos;
+    private String[] retos, castigosDia0;
     private String desafio, premio, castigo;
-    private int cantidadDesafio, cantidadPremio;
+    private int cantidadDesafio, cantidadPremio, dia, jugadoresNoche;
     private Material materialDesafio;
     private ItemStack stackPremio;
+
 
     private PendulumSettings() {
 
@@ -42,6 +42,7 @@ public class PendulumSettings {
         castigo = config.getString("reto.castigo");
         cantidadDesafio = config.getInt("reto.cantidadDesafio");
         cantidadPremio = config.getInt("reto.cantidadPremio");
+        dia = config.getInt("mundo.dia");
 
         String materialDesafioString = config.getString("reto.materialDesafio");
         if (materialDesafioString != null) {
@@ -68,6 +69,9 @@ public class PendulumSettings {
         }
 
         retos = config.getStringList("reto.retos").toArray(new String[0]);
+        castigosDia0 = config.getStringList("reto.castigos.dia0").toArray(new String[0]);
+        jugadoresNoche = config.getInt("mundo.jugadoresNoche");
+
 
     }
 
@@ -97,6 +101,18 @@ public class PendulumSettings {
 
     public String[] getRetos(){
         return retos;
+    }
+
+    public String[] getCastigosDia0(){
+        return castigosDia0;
+    }
+
+    public int getDia(){
+        return dia;
+    }
+
+    public int getJugadoresNoche(){
+        return jugadoresNoche;
     }
 
     public static PendulumSettings getInstance() {
