@@ -3,6 +3,10 @@ mundo:
   dia: 5
   jugadoresNoche: 1
 
+# Ops
+permisos:
+  - iPancrema
+
 # Reto de la semana
 reto:
   desafio: "Consigue 320 cañas de azúcar"

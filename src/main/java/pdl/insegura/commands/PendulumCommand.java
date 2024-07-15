@@ -1,14 +1,13 @@
 package pdl.insegura.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.scoreboard.Score;
@@ -19,8 +18,11 @@ import pdl.insegura.items.customs.netherite.AgileNetherite;
 import pdl.insegura.items.customs.netherite.ReinforcedNetherite;
 import pdl.insegura.items.customs.voided.VoidedArmor;
 import pdl.insegura.items.customs.voided.VoidedItems;
+import pdl.insegura.listeners.mobs.customs.VoidedKnight;
 import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.utils.MessageUtils;
+
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -32,6 +34,7 @@ public class PendulumCommand implements CommandExecutor {
     public static final int RETO_CANTIDAD = PendulumSettings.getInstance().getCantidadDesafio();
     public static final ItemStack RECOMPENSA = PendulumSettings.getInstance().getStackPremio();
     public static String[] RETOS = PendulumSettings.getInstance().getRetos();
+    public static String[] OP = PendulumSettings.getInstance().getOp();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
@@ -65,18 +68,17 @@ public class PendulumCommand implements CommandExecutor {
             case "help":
                 mostrarAyuda(player);
                 break;
-            case "resetcontador":
-                resetContador(player);
-                break;
             case "ruleta":
-                if (player.getName().equals("iPancrema")) {
+                if (checkPermision(player))
                     ruleta();
-                } else {
-                    player.sendMessage("&cNo puedes ejecutar este comando");
-                }
                 break;
             case "give":
-                give(args, player);
+                if (checkPermision(player))
+                    give(args, player);
+                break;
+            case "spawn":
+                if (checkPermision(player))
+                    spawnVoidedKnight(player);
                 break;
             default:
                 sender.sendMessage(MessageUtils.colorMessage("&cComando no reconocido. Usa /pendulum help para ver los comandos disponibles."));
@@ -84,6 +86,16 @@ public class PendulumCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    private boolean checkPermision(Player player) {
+        for (int i = 0; i < OP.length; i++) {
+            if (Objects.equals(OP[i], player.getName())){
+                return true;
+            }
+        }
+        player.sendMessage("&cNo puedes ejecutar este comando. No tienes los permisos suficientes");
+        return false;
     }
 
     private void mostrarInformacionGeneral(Player player) {
@@ -162,7 +174,29 @@ public class PendulumCommand implements CommandExecutor {
         getServer().broadcastMessage(MessageUtils.colorMessage("&l[&d&lPendulum&r&l]&r El reto es &l"+ RETOS[random]));
     }
 
+    private void spawnVoidedKnight(Player player) {
+        Location spawnLocation = player.getLocation();
+        WitherSkeleton witherSkeleton = (WitherSkeleton) player.getWorld().spawnEntity(spawnLocation, EntityType.WITHER_SKELETON);
+
+        // Asumiendo que tienes una instancia de VoidedKnight disponible
+        VoidedKnight voidedKnight = new VoidedKnight(PendulumPlugin.getInstance());
+        voidedKnight.setupVoidedKnight(witherSkeleton);
+
+        // Verificar que se ha configurado correctamente
+        if (VoidedKnight.bossBars.containsKey(witherSkeleton.getUniqueId())) {
+            player.sendMessage(MessageUtils.colorMessage("&aHas spawneado un Voided Knight en tu ubicación."));
+        } else {
+            player.sendMessage(MessageUtils.colorMessage("&cHubo un problema al spawnear el Voided Knight."));
+            witherSkeleton.remove(); // Eliminar el mob si no se pudo configurar correctamente
+        }
+
+        // Imprimir información de depuración
+        Bukkit.getLogger().info("Voided Knight spawneado en " + spawnLocation + " con UUID: " + witherSkeleton.getUniqueId());
+    }
+
     private void resetContador(Player player) {
+
+
         PersistentDataContainer data = player.getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(PendulumPlugin.getInstance(), "DirtyCount");
         data.remove(key);
@@ -173,10 +207,6 @@ public class PendulumCommand implements CommandExecutor {
 
     private void give(String[] args, Player player) {
         String subCommand = "";
-        if (!player.getName().equals("iPancrema")) {
-            player.sendMessage(MessageUtils.colorMessage("&cNo puedes usar este comando"));
-            return;
-        }
 
         try {
             subCommand = args[1].toLowerCase();
@@ -234,4 +264,6 @@ public class PendulumCommand implements CommandExecutor {
                 break;
         }
     }
+
+
 }
