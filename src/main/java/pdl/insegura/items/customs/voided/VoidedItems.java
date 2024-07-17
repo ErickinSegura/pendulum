@@ -75,6 +75,9 @@ public class VoidedItems {
         meta.setDisplayName(pickName);
         meta.setUnbreakable(true);
 
+        meta.addEnchant(Enchantment.DIG_SPEED, 6, true);
+
+
         meta.setCustomModelData(1);
 
         s.setItemMeta(meta);

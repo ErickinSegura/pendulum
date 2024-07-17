@@ -9,9 +9,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class dragon implements Listener {
+public class EndManager implements Listener {
 
     @EventHandler
     public void onEntityGetHit(EntityDamageByEntityEvent event) {
@@ -70,5 +71,22 @@ public class dragon implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onChunkPopulate(ChunkPopulateEvent e) {
+            if (e.getChunk().getWorld().getName().equalsIgnoreCase("world_the_end")) {
+                for (Entity entity : e.getChunk().getEntities()) {
+                    if (entity instanceof ItemFrame frame) {
+                        frame.getItem();
+                        if (frame.getItem().getType() == Material.ELYTRA) {
+                            ItemStack s = new ItemStack(Material.ELYTRA);
+                            s.setDurability((short) 431);
+                            frame.setItem(s);
+                        }
+                    }
+                }
+            }
+    }
+
 
 }

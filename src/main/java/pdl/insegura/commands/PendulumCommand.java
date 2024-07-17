@@ -39,23 +39,8 @@ public class PendulumCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-        String subCommand = args[0].toLowerCase();
 
-        if (subCommand.equals("spawncmd")) {
-            Location spawnLocation;
 
-            if (sender instanceof BlockCommandSender blockSender) {
-                spawnLocation = blockSender.getBlock().getLocation().add(0.5, 2, 0.5);
-            } else if (sender instanceof Player) {
-                spawnLocation = ((Player) sender).getLocation();
-            } else {
-                sender.sendMessage("Este comando solo puede ser ejecutado por un jugador o un bloque de comandos.");
-                return false;
-            }
-
-            spawnVoidedKnightCMD(spawnLocation);
-            return true;
-        }
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(MessageUtils.colorMessage("&cEste comando solo puede ser ejecutado por un jugador."));
@@ -69,13 +54,17 @@ public class PendulumCommand implements CommandExecutor {
             return true;
         }
 
+        String subCommand = args[0].toLowerCase();
 
         switch (subCommand) {
+
             case "reto" -> mostrarReto(player);
             case "entregar" -> entregarReto(player);
             case "check" -> player.performCommand("ptl check");
             case "time" -> player.performCommand("ptl info");
             case "help" -> mostrarAyuda(player);
+            case "reset" -> resetContador(player);
+
             case "ruleta" -> {
                 if (checkPermision(player))
                     ruleta();
@@ -93,7 +82,6 @@ public class PendulumCommand implements CommandExecutor {
                 return true;
             }
         }
-
         return true;
     }
 
@@ -257,7 +245,7 @@ public class PendulumCommand implements CommandExecutor {
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinLeggings());
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinBoots());
 
-                player.sendMessage("Se te añadieron Netherite Armors");
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron las Netherite Armor de Clase"));
                 break;
             case "voided_armor":
                 player.getInventory().addItem(VoidedArmor.CrearVoidHelmet());
@@ -265,7 +253,7 @@ public class PendulumCommand implements CommandExecutor {
                 player.getInventory().addItem(VoidedArmor.CrearVoidLeggings());
                 player.getInventory().addItem(VoidedArmor.CrearVoidBoots());
 
-                player.sendMessage("Se te añadio Voided Armor");
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió la Voided Armor"));
                 break;
             case "voided_items":
                 player.getInventory().addItem(VoidedItems.CrearVoidedShard());
@@ -274,7 +262,7 @@ public class PendulumCommand implements CommandExecutor {
                 player.getInventory().addItem(VoidedItems.CrearVoidedPick());
                 player.getInventory().addItem(VoidedItems.CrearVoidedSword());
 
-                player.sendMessage("Se te añadio Voided Items");
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron los items de Voided"));
                 break;
 
             case "pendu_items":
@@ -282,16 +270,11 @@ public class PendulumCommand implements CommandExecutor {
                 player.getInventory().addItem(PendulumItems.CrearOroDoble());
                 player.getInventory().addItem(PendulumItems.crearKnightSpawner());
 
-                player.sendMessage("Se te añadio Pendulum Items");
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron los items de Pendulum"));
                 break;
 
             default:
-                player.sendMessage("Las opciones son");
-                player.sendMessage("nether_armors");
-                player.sendMessage("voided_armor");
-                player.sendMessage("voided_items");
-                player.sendMessage("pendu_items");
-                player.sendMessage("");
+                player.sendMessage(MessageUtils.colorMessage("&cNo existe en las opciones disponibles"));
                 break;
         }
     }

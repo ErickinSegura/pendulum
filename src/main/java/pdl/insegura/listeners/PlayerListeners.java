@@ -4,19 +4,12 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerBedLeaveEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.player.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
@@ -29,10 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerListeners implements Listener {
-    private int dia = PendulumSettings.getInstance().getDia();
-
-    private String[] castigosDia0 = PendulumSettings.getInstance().getCastigosDia0();
-
+    private final int dia = PendulumSettings.getInstance().getDia();
+    private final String[] castigosDia0 = PendulumSettings.getInstance().getCastigosDia0();
 
 
     @EventHandler
@@ -54,8 +45,8 @@ public class PlayerListeners implements Listener {
             players.playSound(players.getLocation(), "minecraft:muerte", 1, 1);
         }
 
-        if(PendulumSettings.getInstance().getDia() >= 10) {
-            if(player.getScoreboard().getEntryTeam(player.getName()) != null) {
+        if (PendulumSettings.getInstance().getDia() >= 10) {
+            if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
                 player.getScoreboard().getEntryTeam(player.getName()).getEntries().forEach(entry -> {
                     Player teamMember = Bukkit.getPlayer(entry);
                     if (teamMember != null && teamMember.isOnline()) {
@@ -175,7 +166,7 @@ public class PlayerListeners implements Listener {
         Player player = event.getPlayer();
         for (String castigo : castigosDia0) {
             if (player.getName().equals(castigo)) {
-                player.setHealthScale(18);
+                player.setHealthScale(player.getHealthScale() - 4.0);
             }
         }
     }
@@ -208,33 +199,31 @@ public class PlayerListeners implements Listener {
             }
 
             if (event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase(MessageUtils.colorMessage("&d&lVoided Apple"))) {
-                PotionEffect effect = new PotionEffect(PotionEffectType.HEALTH_BOOST,12000,1,true,false);
+                PotionEffect effect = new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 1, true, false);
                 event.getPlayer().addPotionEffect(effect, true);
                 event.getPlayer().sendMessage(MessageUtils.colorMessage("&dVida Boosteada por 10 minutos."));
             }
         }
     }
 
+    // No poermitir que los jugadores entren al end
     @EventHandler
-    public void onChunkPopulate(ChunkPopulateEvent e) {
-        if (dia >= 10) {
-            if (e.getChunk().getWorld().getName().equalsIgnoreCase("world_the_end")) {
-                for (Entity entity : e.getChunk().getEntities()) {
-                    if (entity instanceof ItemFrame) {
-                        ItemFrame frame = (ItemFrame) entity;
-                        if (frame.getItem() != null) {
-                            if (frame.getItem().getType() == Material.ELYTRA) {
-                                ItemStack s = new ItemStack(Material.ELYTRA);
-                                s.setDurability((short) 431);
-                                frame.setItem(s);
-                            }
-                        }
-                    }
-                }
+    public void onPlayerEnterEnd(PlayerPortalEvent event) {
+        if (dia < 10) {
+            if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(MessageUtils.colorMessage("&cNo puedes entrar al End aún."));
+
+                // Teletransportar al jugador fuera del portal
+                Location teleportLocation = event.getPlayer().getLocation().add(3, 1.5, 0); // Ajusta las coordenadas según sea necesario
+                event.getPlayer().teleport(teleportLocation);
+
+                // Reproducir sonido de teletransporte
+                event.getPlayer().playSound(teleportLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
             }
         }
     }
-
 }
+
 
 

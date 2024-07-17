@@ -4,9 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.CommandCompletion;
 import pdl.insegura.commands.PendulumCommand;
-import pdl.insegura.items.customs.PendulumItems;
 import pdl.insegura.listeners.PlayerListeners;
-import pdl.insegura.listeners.end.dragon;
+import pdl.insegura.listeners.end.EndManager;
 import pdl.insegura.listeners.mobs.MobListener;
 import pdl.insegura.listeners.mobs.SpawnListener;
 import pdl.insegura.listeners.mobs.customs.VoidedKnight;
@@ -67,7 +66,7 @@ public class PendulumPlugin extends JavaPlugin {
     public void registerEventsMobs(){
         getServer().getPluginManager().registerEvents(new MobListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
-        getServer().getPluginManager().registerEvents(new dragon(), this);
+        getServer().getPluginManager().registerEvents(new EndManager(), this);
     }
 
     private void registerCommands() {

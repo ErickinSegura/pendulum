@@ -40,7 +40,7 @@ public class StructureGenerator implements Listener {
 
     @EventHandler
     public void onChunkPopulate(ChunkPopulateEvent event) {
-        if (PendulumSettings.getInstance().getDia() <= 10) {
+        if (PendulumSettings.getInstance().getDia() < 10) {
             return;
         }
         // Check if the world is the Overworld
@@ -48,10 +48,12 @@ public class StructureGenerator implements Listener {
             return; // Do nothing if it's not the Overworld
         }
 
+        int rand = random.nextInt(1000);
         Chunk chunk = event.getChunk();
 
+
         // Probability of 1/500 to generate a floating island
-        if (random.nextInt(1000) == 0) {
+        if (rand == 0) {
             generateFloatingIsland(chunk);
         }
     }
@@ -70,7 +72,7 @@ public class StructureGenerator implements Listener {
             schemsDir.mkdirs(); // Create the directory if it doesn't exist
         }
 
-        File schematic = new File(PendulumPlugin.getInstance().getDataFolder(), "void.schem");
+        File schematic = new File(PendulumPlugin.getInstance().getDataFolder(), "/Schems/void.schem");
         if (!schematic.exists()) {
             System.out.println("Schematic file not found: " + schematic.getPath());
             return;

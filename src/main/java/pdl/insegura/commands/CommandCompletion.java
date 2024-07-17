@@ -28,6 +28,7 @@ public class CommandCompletion implements TabCompleter {
                 completions.add("give");
                 completions.add("ruleta");
                 completions.add("spawn");
+                completions.add("reset");
 
             }
         }
