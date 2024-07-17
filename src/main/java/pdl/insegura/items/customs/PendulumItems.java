@@ -1,18 +1,26 @@
 package pdl.insegura.items.customs;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.WitherSkeleton;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import pdl.insegura.listeners.mobs.customs.VoidedKnight;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.PendulumPlugin;
 
-public class PendulumItems implements Listener {
+import java.util.Objects;
 
-    private final NamespacedKey spawnerKey = new NamespacedKey(PendulumPlugin.getInstance(), "specialSpawner");
+public class PendulumItems implements Listener {
 
     public static ItemStack CrearOroDoble() {
         ItemStack s = new ItemStack(Material.POPPED_CHORUS_FRUIT);
@@ -33,4 +41,17 @@ public class PendulumItems implements Listener {
         s.setItemMeta(meta);
         return s;
     }
+
+    public static ItemStack crearKnightSpawner() {
+        ItemStack spawner = new ItemStack(Material.SPAWNER);
+        ItemMeta meta = spawner.getItemMeta();
+        meta.setDisplayName(ChatColor.DARK_PURPLE + "Voided Knight Spawner");
+        spawner.setItemMeta(meta);
+        return spawner;
+    }
+
+
+
+
+
 }

@@ -33,7 +33,7 @@ public class CommandCompletion implements TabCompleter {
         }
 
         if (args.length == 2) {
-            if (args[1].equalsIgnoreCase("give")) {
+            if (args[0].equalsIgnoreCase("give")) {
                 completions.add("nether_armors");
                 completions.add("voided_armor");
                 completions.add("voided_items");

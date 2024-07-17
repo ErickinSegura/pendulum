@@ -2,6 +2,8 @@ package pdl.insegura.listeners.mobs.customs;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.boss.BarColor;
@@ -11,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +21,7 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import pdl.insegura.PendulumPlugin;
 
 import java.util.*;
 
@@ -58,6 +62,8 @@ public class VoidedKnight implements Listener {
         entity.setCustomName(ChatColor.DARK_PURPLE + "§lVoided Knight");
         entity.setCustomNameVisible(true);
         entity.setArrowCooldown(entity.getArrowCooldown()/2);
+
+        entity.setRemoveWhenFarAway(false);
 
 
         // Aumentar el alcance de ataque y el knockback resistance
@@ -251,6 +257,8 @@ public class VoidedKnight implements Listener {
             }
         }
     }
+
+
 
 
 

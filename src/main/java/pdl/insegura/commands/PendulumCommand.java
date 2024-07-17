@@ -2,6 +2,7 @@ package pdl.insegura.commands;
 
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,6 +39,24 @@ public class PendulumCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+        String subCommand = args[0].toLowerCase();
+
+        if (subCommand.equals("spawncmd")) {
+            Location spawnLocation;
+
+            if (sender instanceof BlockCommandSender blockSender) {
+                spawnLocation = blockSender.getBlock().getLocation().add(0.5, 2, 0.5);
+            } else if (sender instanceof Player) {
+                spawnLocation = ((Player) sender).getLocation();
+            } else {
+                sender.sendMessage("Este comando solo puede ser ejecutado por un jugador o un bloque de comandos.");
+                return false;
+            }
+
+            spawnVoidedKnightCMD(spawnLocation);
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
             sender.sendMessage(MessageUtils.colorMessage("&cEste comando solo puede ser ejecutado por un jugador."));
             return true;
@@ -50,39 +69,29 @@ public class PendulumCommand implements CommandExecutor {
             return true;
         }
 
-        String subCommand = args[0].toLowerCase();
 
         switch (subCommand) {
-            case "reto":
-                mostrarReto(player);
-                break;
-            case "entregar":
-                entregarReto(player);
-                break;
-            case "check":
-                player.performCommand("ptl check");
-                break;
-            case "time":
-                player.performCommand("ptl info");
-                break;
-            case "help":
-                mostrarAyuda(player);
-                break;
-            case "ruleta":
+            case "reto" -> mostrarReto(player);
+            case "entregar" -> entregarReto(player);
+            case "check" -> player.performCommand("ptl check");
+            case "time" -> player.performCommand("ptl info");
+            case "help" -> mostrarAyuda(player);
+            case "ruleta" -> {
                 if (checkPermision(player))
                     ruleta();
-                break;
-            case "give":
+            }
+            case "give" -> {
                 if (checkPermision(player))
                     give(args, player);
-                break;
-            case "spawn":
+            }
+            case "spawn" -> {
                 if (checkPermision(player))
                     spawnVoidedKnight(player);
-                break;
-            default:
+            }
+            default -> {
                 sender.sendMessage(MessageUtils.colorMessage("&cComando no reconocido. Usa /pendulum help para ver los comandos disponibles."));
                 return true;
+            }
         }
 
         return true;
@@ -194,6 +203,27 @@ public class PendulumCommand implements CommandExecutor {
         Bukkit.getLogger().info("Voided Knight spawneado en " + spawnLocation + " con UUID: " + witherSkeleton.getUniqueId());
     }
 
+    public void spawnVoidedKnightCMD(Location spawnLocation) {
+        WitherSkeleton witherSkeleton = (WitherSkeleton) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.WITHER_SKELETON);
+        // Asumiendo que tienes una instancia de VoidedKnight disponible
+        VoidedKnight voidedKnight = new VoidedKnight(PendulumPlugin.getInstance());
+        voidedKnight.setupVoidedKnight(witherSkeleton);
+
+        // reproducción de sonido que se llama "inicio"
+
+        for (Player players : Bukkit.getOnlinePlayers())
+        {
+            //Player the sound for  player
+            players.playSound(players.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1F, 0.5F);
+        }
+
+
+
+
+        // Imprimir información de depuración
+        Bukkit.getLogger().info("Voided Knight spawneado en " + spawnLocation + " con UUID: " + witherSkeleton.getUniqueId());
+    }
+
     private void resetContador(Player player) {
 
 
@@ -250,6 +280,7 @@ public class PendulumCommand implements CommandExecutor {
             case "pendu_items":
                 player.getInventory().addItem(PendulumItems.CrearDirtyHearty());
                 player.getInventory().addItem(PendulumItems.CrearOroDoble());
+                player.getInventory().addItem(PendulumItems.crearKnightSpawner());
 
                 player.sendMessage("Se te añadio Pendulum Items");
                 break;

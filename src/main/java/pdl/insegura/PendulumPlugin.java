@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.CommandCompletion;
 import pdl.insegura.commands.PendulumCommand;
+import pdl.insegura.items.customs.PendulumItems;
 import pdl.insegura.listeners.PlayerListeners;
 import pdl.insegura.listeners.end.dragon;
 import pdl.insegura.listeners.mobs.MobListener;
@@ -53,7 +54,8 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
         getServer().getPluginManager().registerEvents(new StructureGenerator(this), this);
-        Bukkit.getPluginManager().registerEvents(new VoidedKnight(this), this);
+        getServer().getPluginManager().registerEvents(new VoidedKnight(this), this);
+
     }
 
     private void registerRecipes() {
