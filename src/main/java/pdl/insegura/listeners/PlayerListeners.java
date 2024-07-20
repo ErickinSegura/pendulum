@@ -4,7 +4,9 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
@@ -133,7 +135,7 @@ public class PlayerListeners implements Listener {
     }
 
     private int calculateNeededPlayers() {
-        if (dia >= 10) {
+        if (dia > 10) {
             return PendulumSettings.getInstance().getJugadoresNoche(); // Ejemplo de ajuste basado en el día
         } else {
             return 1;
@@ -206,7 +208,6 @@ public class PlayerListeners implements Listener {
         }
     }
 
-    // No poermitir que los jugadores entren al end
     @EventHandler
     public void onPlayerEnterEnd(PlayerPortalEvent event) {
         if (dia < 10) {
@@ -223,6 +224,35 @@ public class PlayerListeners implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && dia >= 15) {
+            event.getPlayer().setCooldown(Material.ENDER_PEARL, 20 * 6); // 1 minuto de cooldown
+        }
+    }
+
+    // Detectar cuando se tira un huevo y genera pollitos bebe
+    @EventHandler
+    public void onEggThrow(PlayerEggThrowEvent event) {
+        if (dia >= 15) {
+            if (event.getNumHatches() > 0) {
+                event.setHatching(false);
+                if (Math.random() < 0.1) {
+                    Wither wither = (Wither) event.getEgg().getLocation().getWorld().spawnEntity(event.getEgg().getLocation(), EntityType.WITHER);
+                    wither.setCustomName("Pollito Bebé de " + event.getPlayer().getName());
+
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
+                    }
+                }
+            }
+
+
+        }
+    }
+
+
 }
 
 

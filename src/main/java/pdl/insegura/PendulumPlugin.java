@@ -4,10 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.CommandCompletion;
 import pdl.insegura.commands.PendulumCommand;
+import pdl.insegura.items.customs.ArmorListener;
 import pdl.insegura.listeners.PlayerListeners;
 import pdl.insegura.listeners.end.EndManager;
 import pdl.insegura.listeners.mobs.MobListener;
 import pdl.insegura.listeners.mobs.SpawnListener;
+import pdl.insegura.listeners.mobs.customs.InfernalGuardian;
 import pdl.insegura.listeners.mobs.customs.VoidedKnight;
 import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
@@ -53,7 +55,7 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
         getServer().getPluginManager().registerEvents(new StructureGenerator(this), this);
-        getServer().getPluginManager().registerEvents(new VoidedKnight(this), this);
+        getServer().getPluginManager().registerEvents(new ArmorListener(), this);
 
     }
 
@@ -67,6 +69,8 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MobListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
         getServer().getPluginManager().registerEvents(new EndManager(), this);
+        getServer().getPluginManager().registerEvents(new VoidedKnight(this), this);
+        getServer().getPluginManager().registerEvents(new InfernalGuardian(), this);
     }
 
     private void registerCommands() {
