@@ -17,6 +17,8 @@ import pdl.insegura.PendulumPlugin;
 import pdl.insegura.items.customs.PendulumItems;
 import pdl.insegura.items.customs.netherite.AgileNetherite;
 import pdl.insegura.items.customs.netherite.ReinforcedNetherite;
+import pdl.insegura.items.customs.voided.AssaultArmor;
+import pdl.insegura.items.customs.voided.GuardianArmor;
 import pdl.insegura.items.customs.voided.VoidedArmor;
 import pdl.insegura.items.customs.voided.VoidedItems;
 import pdl.insegura.listeners.mobs.customs.VoidedKnight;
@@ -234,48 +236,65 @@ public class PendulumCommand implements CommandExecutor {
 
 
         switch (subCommand) {
-            case "nether_armors":
+            case "agile_netherite" -> {
                 player.getInventory().addItem(AgileNetherite.CrearAgiHelmet());
                 player.getInventory().addItem(AgileNetherite.CrearAgiChestplate());
                 player.getInventory().addItem(AgileNetherite.CrearAgiLeggings());
                 player.getInventory().addItem(AgileNetherite.CrearAgiBoots());
-
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Agile Netherite Armor"));
+            }
+            case "reinforced_netherite" -> {
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinHelmet());
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinChestplate());
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinLeggings());
                 player.getInventory().addItem(ReinforcedNetherite.CrearReinBoots());
-
-                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron las Netherite Armor de Clase"));
-                break;
-            case "voided_armor":
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Reinforced Netherite Armor"));
+            }
+            case "voided_armor" -> {
                 player.getInventory().addItem(VoidedArmor.CrearVoidHelmet());
                 player.getInventory().addItem(VoidedArmor.CrearVoidChestplate());
                 player.getInventory().addItem(VoidedArmor.CrearVoidLeggings());
                 player.getInventory().addItem(VoidedArmor.CrearVoidBoots());
-
-                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió la Voided Armor"));
-                break;
-            case "voided_items":
-                player.getInventory().addItem(VoidedItems.CrearVoidedShard());
-                player.getInventory().addItem(VoidedItems.CrearVoidedIngot());
-                player.getInventory().addItem(VoidedItems.CrearVoidedApple());
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Armor"));
+            }
+            case "assault_armor" -> {
+                player.getInventory().addItem(AssaultArmor.CrearAssaultHelmet());
+                player.getInventory().addItem(AssaultArmor.crearAssaultChestplate());
+                player.getInventory().addItem(AssaultArmor.crearAssaultLeggings());
+                player.getInventory().addItem(AssaultArmor.crearAssaultBoots());
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Assault Armor"));
+            }
+            case "guardian_armor" -> {
+                player.getInventory().addItem(GuardianArmor.CrearGuardianHelmet());
+                player.getInventory().addItem(GuardianArmor.CrearGuardianChestplate());
+                player.getInventory().addItem(GuardianArmor.CrearGuardianLeggings());
+                player.getInventory().addItem(GuardianArmor.CrearGuardianBoots());
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Guardian Armor"));
+            }
+            case "voided_tools" -> {
                 player.getInventory().addItem(VoidedItems.CrearVoidedPick());
                 player.getInventory().addItem(VoidedItems.CrearVoidedSword());
-
-                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron los items de Voided"));
-                break;
-
-            case "pendu_items":
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Tools"));
+            }
+            case "voided_ingot" -> {
+                player.getInventory().addItem(VoidedItems.CrearVoidedIngot());
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Ingot"));
+            }
+            case "voidad_shard" -> {
+                player.getInventory().addItem(VoidedItems.CrearVoidedShard());
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Voided Shard"));
+            }
+            case "dirty_hearty" -> {
                 player.getInventory().addItem(PendulumItems.CrearDirtyHearty());
-                player.getInventory().addItem(PendulumItems.CrearOroDoble());
-                player.getInventory().addItem(PendulumItems.crearKnightSpawner());
-
-                player.sendMessage(MessageUtils.colorMessage("&aSe te añadieron los items de Pendulum"));
-                break;
-
-            default:
-                player.sendMessage(MessageUtils.colorMessage("&cNo existe en las opciones disponibles"));
-                break;
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x1 Dirty Hearty"));
+            }
+            case "oro_doble" -> {
+                for (int i = 0; i < 64; i++) {
+                    player.getInventory().addItem(PendulumItems.CrearOroDoble());
+                }
+                player.sendMessage(MessageUtils.colorMessage("&aSe te añadió x64 Oro Doble"));
+            }
+            default -> player.sendMessage(MessageUtils.colorMessage("&cNo existe en las opciones disponibles"));
         }
     }
 

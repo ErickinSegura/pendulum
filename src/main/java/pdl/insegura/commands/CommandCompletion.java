@@ -35,10 +35,16 @@ public class CommandCompletion implements TabCompleter {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("give")) {
-                completions.add("nether_armors");
+                completions.add("agile_netherite");
+                completions.add("reinforced_netherite");
                 completions.add("voided_armor");
-                completions.add("voided_items");
-                completions.add("pendu_items");
+                completions.add("assault_armor");
+                completions.add("guardian_armor");
+                completions.add("voided_tools");
+                completions.add("voided_ingot");
+                completions.add("voidad_shard");
+                completions.add("dirty_hearty");
+                completions.add("oro_doble");
             }
         }
 

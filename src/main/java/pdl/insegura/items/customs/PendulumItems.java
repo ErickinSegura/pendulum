@@ -41,17 +41,4 @@ public class PendulumItems implements Listener {
         s.setItemMeta(meta);
         return s;
     }
-
-    public static ItemStack crearKnightSpawner() {
-        ItemStack spawner = new ItemStack(Material.SPAWNER);
-        ItemMeta meta = spawner.getItemMeta();
-        meta.setDisplayName(ChatColor.DARK_PURPLE + "Voided Knight Spawner");
-        spawner.setItemMeta(meta);
-        return spawner;
-    }
-
-
-
-
-
 }

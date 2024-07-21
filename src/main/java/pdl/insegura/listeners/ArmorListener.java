@@ -1,4 +1,4 @@
-package pdl.insegura.items.customs;
+package pdl.insegura.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
