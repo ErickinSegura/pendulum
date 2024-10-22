@@ -34,9 +34,15 @@ public class CommandCompletion implements TabCompleter {
                 "voided_ingot", "voidad_shard", "dirty_hearty", "oro_doble"
         );
 
+        // Subcomandos de spawn
+        List<String> spawnOptions = Arrays.asList(
+                "knight", "guardian", "penguin"
+        );
+
         subCommandCompletions.put("basic", basicCommands);
         subCommandCompletions.put("admin", adminCommands);
         subCommandCompletions.put("give", giveOptions);
+        subCommandCompletions.put("spawn", spawnOptions);
     }
 
     @Override
@@ -54,9 +60,12 @@ public class CommandCompletion implements TabCompleter {
             return filterCompletions(completions, args[0]);
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("give") &&
-                checkPermission(player)) {
-            return filterCompletions(subCommandCompletions.get("give"), args[1]);
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("give") && checkPermission(player)) {
+                return filterCompletions(subCommandCompletions.get("give"), args[1]);
+            } else if (args[0].equalsIgnoreCase("spawn") && checkPermission(player)) {
+                return filterCompletions(subCommandCompletions.get("spawn"), args[1]);
+            }
         }
 
         return Collections.emptyList();

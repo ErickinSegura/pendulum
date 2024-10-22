@@ -10,6 +10,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import pdl.insegura.listeners.mobs.customs.ExplosivePenguinVillager;
 import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.listeners.mobs.customs.InfernalGuardian;
 
@@ -43,6 +44,13 @@ public class SpawnListener implements Listener {
 
             if (event.getEntity() instanceof Creeper) {
                 event.getEntity().setSilent(true);
+            }
+
+            if (event.getEntity() instanceof Villager &&
+                    (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.NATURAL ||
+                            event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CHUNK_GEN)) {
+                ExplosivePenguinVillager.trySpawnPenguinVillager(event.getLocation());
+                event.setCancelled(true);
             }
         }
 
