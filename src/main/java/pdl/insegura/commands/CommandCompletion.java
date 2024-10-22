@@ -6,59 +6,71 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import pdl.insegura.utils.PendulumSettings;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class CommandCompletion implements TabCompleter {
-    public static String[] OP = PendulumSettings.getInstance().getOp();
+    private final Map<String, List<String>> subCommandCompletions;
+
+    public CommandCompletion() {
+        this.subCommandCompletions = new HashMap<>();
+        initializeCompletions();
+    }
+
+    private void initializeCompletions() {
+        // Comandos básicos disponibles para todos
+        List<String> basicCommands = Arrays.asList(
+                "help", "reto", "entregar", "check", "time"
+        );
+
+        // Comandos admin
+        List<String> adminCommands = Arrays.asList(
+                "give", "ruleta", "spawn", "reset"
+        );
+
+        // Subcomandos de give
+        List<String> giveOptions = Arrays.asList(
+                "agile_netherite", "reinforced_netherite", "voided_armor",
+                "assault_armor", "guardian_armor", "voided_tools",
+                "voided_ingot", "voidad_shard", "dirty_hearty", "oro_doble"
+        );
+
+        subCommandCompletions.put("basic", basicCommands);
+        subCommandCompletions.put("admin", adminCommands);
+        subCommandCompletions.put("give", giveOptions);
+    }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> completions = new ArrayList<>();
+    public List<String> onTabComplete(CommandSender sender, Command command,
+                                      String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            return Collections.emptyList();
+        }
 
         if (args.length == 1) {
-            completions.add("help");
-            completions.add("reto");
-            completions.add("entregar");
-            completions.add("check");
-            completions.add("time");
-
-            if (checkPermision((Player) sender)) {
-                completions.add("give");
-                completions.add("ruleta");
-                completions.add("spawn");
-                completions.add("reset");
-
+            List<String> completions = new ArrayList<>(subCommandCompletions.get("basic"));
+            if (checkPermission(player)) {
+                completions.addAll(subCommandCompletions.get("admin"));
             }
+            return filterCompletions(completions, args[0]);
         }
 
-        if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("give")) {
-                completions.add("agile_netherite");
-                completions.add("reinforced_netherite");
-                completions.add("voided_armor");
-                completions.add("assault_armor");
-                completions.add("guardian_armor");
-                completions.add("voided_tools");
-                completions.add("voided_ingot");
-                completions.add("voidad_shard");
-                completions.add("dirty_hearty");
-                completions.add("oro_doble");
-            }
+        if (args.length == 2 && args[0].equalsIgnoreCase("give") &&
+                checkPermission(player)) {
+            return filterCompletions(subCommandCompletions.get("give"), args[1]);
         }
 
-
-        return completions;
+        return Collections.emptyList();
     }
 
-    private boolean checkPermision(Player player) {
-        for (String s : OP) {
-            if (Objects.equals(s, player.getName())) {
-                return true;
-            }
-        }
-        return false;
+    private List<String> filterCompletions(List<String> completions, String partial) {
+        return completions.stream()
+                .filter(s -> s.toLowerCase().startsWith(partial.toLowerCase()))
+                .sorted()
+                .toList();
     }
 
+    private boolean checkPermission(Player player) {
+        return Arrays.asList(PendulumSettings.getInstance().getOp())
+                .contains(player.getName());
+    }
 }
