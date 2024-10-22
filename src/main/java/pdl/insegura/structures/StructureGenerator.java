@@ -10,17 +10,18 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import pdl.insegura.PendulumPlugin;
 import pdl.insegura.commands.PendulumCommand;
+import pdl.insegura.listeners.mobs.customs.VoidedKnight;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
 
@@ -91,8 +92,7 @@ public class StructureGenerator implements Listener {
             // Buscamos la Blackstone Brick Slab para spawnear al Voided Knight
             Location spawnLocation = findBlackstoneBrickSlabLocation(location, clipboard);
             if (spawnLocation != null) {
-                PendulumCommand voidedKnight = new PendulumCommand();
-                voidedKnight.spawnVoidedKnightCMD(spawnLocation);
+                spawnVoidedKnightCMD(spawnLocation);
                 Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&dVoided Knight spawned at " + spawnLocation));
             } else {
                 Bukkit.getConsoleSender().sendMessage(MessageUtils.colorMessage("&dNo Blackstone Brick Slab found"));
@@ -102,6 +102,25 @@ public class StructureGenerator implements Listener {
             e.printStackTrace();
         }
     }
+
+    public void spawnVoidedKnightCMD(Location spawnLocation) {
+        WitherSkeleton witherSkeleton = (WitherSkeleton) spawnLocation.getWorld().spawnEntity(spawnLocation, EntityType.WITHER_SKELETON);
+        // Asumiendo que tienes una instancia de VoidedKnight disponible
+        VoidedKnight voidedKnight = new VoidedKnight(PendulumPlugin.getInstance());
+        voidedKnight.setupVoidedKnight(witherSkeleton);
+
+        // reproducción de sonido que se llama "inicio"
+
+        for (Player players : Bukkit.getOnlinePlayers())
+        {
+            //Player the sound for  player
+            players.playSound(players.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1F, 0.5F);
+        }
+
+        // Imprimir información de depuración
+        Bukkit.getLogger().info("Voided Knight spawneado en " + spawnLocation + " con UUID: " + witherSkeleton.getUniqueId());
+    }
+
 
     private Location findBlackstoneBrickSlabLocation(Location baseLocation, Clipboard clipboard) {
         BlockVector3 clipboardOrigin = clipboard.getOrigin();

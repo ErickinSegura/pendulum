@@ -1,5 +1,6 @@
 package pdl.insegura.items;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
@@ -10,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.items.customs.netherite.AgileNetherite;
 import pdl.insegura.items.customs.PendulumItems;
 import pdl.insegura.items.customs.netherite.ReinforcedNetherite;
+import pdl.insegura.items.customs.voided.AssaultArmor;
+import pdl.insegura.items.customs.voided.GuardianArmor;
 import pdl.insegura.items.customs.voided.VoidedArmor;
 import pdl.insegura.items.customs.voided.VoidedItems;
 import org.bukkit.inventory.RecipeChoice;
@@ -61,6 +64,22 @@ public class ItemsRecipes implements Listener {
                 registrarVoidedChest();
                 registrarVoidedLegg();
                 registrarVoidedBoots();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (PendulumSettings.getInstance().getDia() >= 15) {
+            try {
+                registarAssaultHelmet();
+                registarAssaultChestplate();
+                registarAssaultLeggings();
+                registarAssaultBoots();
+
+                registarGuardianHelmet();
+                registarGuardianChestplate();
+                registarGuardianLeggings();
+                registarGuardianBoots();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -242,8 +261,86 @@ public class ItemsRecipes implements Listener {
         plugin.getServer().addRecipe(recipe);
     }
 
+    // Dia 15
 
+    private void registarAssaultHelmet() {
+        ItemStack s = AssaultArmor.CrearAssaultHelmet();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("assault_helmet"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_HELMET);
+        recipe.setIngredient('R', Material.REDSTONE_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
 
+    private void registarAssaultChestplate() {
+        ItemStack s = AssaultArmor.crearAssaultChestplate();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("assault_chestplate"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_CHESTPLATE);
+        recipe.setIngredient('R', Material.REDSTONE_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
 
+    private void registarAssaultLeggings() {
+        ItemStack s = AssaultArmor.crearAssaultLeggings();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("assault_leggings"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_LEGGINGS);
+        recipe.setIngredient('R', Material.REDSTONE_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registarAssaultBoots() {
+        ItemStack s = AssaultArmor.crearAssaultBoots();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("assault_boots"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_BOOTS);
+        recipe.setIngredient('R', Material.REDSTONE_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registarGuardianHelmet() {
+        ItemStack s = GuardianArmor.CrearGuardianHelmet();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("guardian_helmet"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_HELMET);
+        recipe.setIngredient('R', Material.LAPIS_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registarGuardianChestplate() {
+        ItemStack s = GuardianArmor.CrearGuardianChestplate();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("guardian_chestplate"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_CHESTPLATE);
+        recipe.setIngredient('R', Material.LAPIS_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registarGuardianLeggings() {
+        ItemStack s = GuardianArmor.CrearGuardianLeggings();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("guardian_leggings"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_LEGGINGS);
+        recipe.setIngredient('R', Material.LAPIS_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registarGuardianBoots() {
+        ItemStack s = GuardianArmor.CrearGuardianBoots();
+        ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("guardian_boots"), s);
+        recipe.shape("RGR", "GAG", "RGR");
+        recipe.setIngredient('G', Material.NETHER_STAR);
+        recipe.setIngredient('A', Material.NETHERITE_BOOTS);
+        recipe.setIngredient('R', Material.LAPIS_BLOCK);
+        plugin.getServer().addRecipe(recipe);
+    }
 
 }
