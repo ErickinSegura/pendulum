@@ -68,7 +68,7 @@ public class PendulumPlugin extends JavaPlugin {
     public void registerEventsMobs(){
         getServer().getPluginManager().registerEvents(new MobListener(), this);
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
-        getServer().getPluginManager().registerEvents(new EndManager(), this);
+        getServer().getPluginManager().registerEvents(new EndManager(this), this);
         getServer().getPluginManager().registerEvents(new VoidedKnight(this), this);
         getServer().getPluginManager().registerEvents(new InfernalGuardian(), this);
     }
