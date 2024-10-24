@@ -105,7 +105,7 @@ public class ItemsRecipes implements Listener {
     private void uncraftOroDoble(){
         ItemStack s = new ItemStack(Material.GOLD_BLOCK);
         ShapelessRecipe recipe = new ShapelessRecipe(NamespacedKey.minecraft("bloque_oro"), s);
-        recipe.addIngredient(1, Material.SPAWNER);
+        recipe.addIngredient(1, Material.POPPED_CHORUS_FRUIT);
         plugin.getServer().addRecipe(recipe);
     }
 

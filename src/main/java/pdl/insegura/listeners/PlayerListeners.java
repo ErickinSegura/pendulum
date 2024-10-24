@@ -8,7 +8,9 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wither;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
@@ -20,105 +22,114 @@ import pdl.insegura.PendulumPlugin;
 import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
-import java.util.HashSet;
+
+import java.util.Collections;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 public class PlayerListeners implements Listener {
-    private final int dia = PendulumSettings.getInstance().getDia();
-    private final String[] castigosDia0 = PendulumSettings.getInstance().getCastigosDia0();
+    private static final String DIRTY_HEARTHY_NAME = "&c&lDirty Hearthy";
+    private static final String VOIDED_APPLE_NAME = "&d&lVoided Apple";
+    private static final int DIRTY_HEARTHY_MAX = 5;
+    private static final int NIGHT_START = 13000;
+    private static final long SLEEP_DELAY = 60L;
+    private static final int ENDER_PEARL_COOLDOWN = 120;
+    private static final double WITHER_SPAWN_CHANCE = 0.1;
+    private static final double CHEST_CHANCE = 0.25;
 
+    private final Set<Player> sleepingPlayers = Collections.newSetFromMap(new WeakHashMap<>());
+    private final PendulumSettings settings = PendulumSettings.getInstance();
+    private final NamespacedKey dirtyHearthyKey;
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
-        Player player = event.getEntity();
-        Location location = player.getLocation();
-
-        // Check if player died by falling into void (like in End)
-        if (player.getLastDamageCause().getCause() == org.bukkit.event.entity.EntityDamageEvent.DamageCause.VOID) {
-            // Set location to the lowest block possible
-            location.setY(location.getWorld().getMinHeight() + 1);
-        } else {
-            // Otherwise, set location to player's death location
-            location = player.getLocation();
-        }
-
-        // Play death sound to all players
-        for (Player players : Bukkit.getOnlinePlayers()) {
-            players.playSound(players.getLocation(), "minecraft:muerte", 1, 1);
-        }
-
-        if (PendulumSettings.getInstance().getDia() >= 10) {
-            if (player.getScoreboard().getEntryTeam(player.getName()) != null) {
-                player.getScoreboard().getEntryTeam(player.getName()).getEntries().forEach(entry -> {
-                    Player teamMember = Bukkit.getPlayer(entry);
-                    if (teamMember != null && teamMember.isOnline()) {
-                        teamMember.sendMessage(MessageUtils.colorMessage("&d&lPor la muerte de alguien de tu equipo perdiste todos tus efectos de poción..."));
-                        for (PotionEffect effect : teamMember.getActivePotionEffects()) {
-                            teamMember.removePotionEffect(effect.getType());
-                        }
-                    }
-                });
-            }
-        }
-
-        // Broadcast death message
-        Bukkit.getServer().broadcastMessage(MessageUtils.colorMessage("&dA &5&l" + player.getName() + "&r&d se le ha acabado el tiempo..."));
-        if (player.getKiller() == null) {
-            Bukkit.getServer().broadcastMessage(MessageUtils.colorMessage("Coordenadas de Muerte: &l" + location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ()));
-        }
-
-        // Mensaje Custom de muerte
-        Bukkit.getServer().broadcastMessage(MessageUtils.colorMessage(DeathMessages.getInstance().getDeathMessage(player.getName())));
-
-        // Place head
-        Block fence = location.getBlock();
-        fence.setType(Material.END_ROD);
-
-        location.add(0, 1, 0);
-        Block head = location.getBlock();
-        head.setType(Material.PLAYER_HEAD);
-        Skull skullBlock = (Skull) head.getState();
-        skullBlock.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
-        skullBlock.update(true);
-
-        // Place block under head
-        location.add(0, -2, 0);
-        Block base = location.getBlock();
-        int bloque = (int) Math.floor(Math.random() * 10 + 1);
-
-        if (bloque >= 1 && bloque < 5) {
-            base.setType(Material.GOLD_BLOCK);
-        } else if (bloque >= 5 && bloque < 8) {
-            base.setType(Material.EMERALD_BLOCK);
-        } else if (bloque >= 8 && bloque < 10) {
-            base.setType(Material.DIAMOND_BLOCK);
-        } else if (bloque == 10) {
-            base.setType(Material.NETHERITE_BLOCK);
-        }
-
-        // Display death message on screen
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "title @a times 20 40 20");
-        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "title @a title [\"\",{\"text\":\"-\",\"obfuscated\":true},{\"text\":\" \\u231a \"},{\"text\":\"Muerto \",\"bold\":true,\"color\":\"light_purple\"},{\"text\":\"\\u231a \"},{\"text\":\"-\",\"obfuscated\":true}]");
+    public PlayerListeners(PendulumPlugin plugin) {
+        this.dirtyHearthyKey = new NamespacedKey(plugin, "DirtyCount");
     }
 
-    private final Set<Player> sleepingPlayers = new HashSet<>();
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        Location location = getDeathLocation(player);
 
-    @EventHandler
+        broadcastDeathSound();
+        handleTeamEffects(player);
+        broadcastDeathMessages(player, location);
+        createDeathMemorial(location, player);
+        displayDeathTitle();
+    }
+
+    private Location getDeathLocation(Player player) {
+        Location location = player.getLocation();
+        if (player.getLastDamageCause().getCause() == org.bukkit.event.entity.EntityDamageEvent.DamageCause.VOID) {
+            location.setY(location.getWorld().getMinHeight() + 1);
+        }
+        return location;
+    }
+
+    private void broadcastDeathSound() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player.getLocation(), "minecraft:muerte", 1, 1);
+        }
+    }
+
+    private void handleTeamEffects(Player player) {
+        if (settings.getDia() >= 10 && player.getScoreboard().getEntryTeam(player.getName()) != null) {
+            player.getScoreboard().getEntryTeam(player.getName()).getEntries().forEach(entry -> {
+                Player teamMember = Bukkit.getPlayer(entry);
+                if (teamMember != null && teamMember.isOnline()) {
+                    teamMember.sendMessage(MessageUtils.colorMessage("&d&lPor la muerte de alguien de tu equipo perdiste todos tus efectos de poción..."));
+                    teamMember.getActivePotionEffects().forEach(effect -> teamMember.removePotionEffect(effect.getType()));
+                }
+            });
+        }
+    }
+
+    private void broadcastDeathMessages(Player player, Location location) {
+        Bukkit.broadcastMessage(MessageUtils.colorMessage("&dA &5&l" + player.getName() + "&r&d se le ha acabado el tiempo..."));
+        if (player.getKiller() == null) {
+            Bukkit.broadcastMessage(MessageUtils.colorMessage("Coordenadas de Muerte: &l" + location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ()));
+        }
+        Bukkit.broadcastMessage(MessageUtils.colorMessage(DeathMessages.getInstance().getDeathMessage(player.getName())));
+    }
+
+    private void createDeathMemorial(Location location, Player player) {
+        // Place end rod
+        location.getBlock().setType(Material.END_ROD);
+
+        // Place player head
+        location.add(0, 1, 0);
+        Block headBlock = location.getBlock();
+        headBlock.setType(Material.PLAYER_HEAD);
+        Skull skull = (Skull) headBlock.getState();
+        skull.setOwningPlayer(Bukkit.getOfflinePlayer(player.getUniqueId()));
+        skull.update(true);
+
+        // Place base block
+        location.add(0, -2, 0);
+        setRandomBaseBlock(location.getBlock());
+    }
+
+    private void setRandomBaseBlock(Block block) {
+        double random = Math.random();
+        if (random < 0.4) {
+            block.setType(Material.GOLD_BLOCK);
+        } else if (random < 0.7) {
+            block.setType(Material.EMERALD_BLOCK);
+        } else if (random < 0.9) {
+            block.setType(Material.DIAMOND_BLOCK);
+        } else {
+            block.setType(Material.NETHERITE_BLOCK);
+        }
+    }
+
+    private void displayDeathTitle() {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "title @a times 20 40 20");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "title @a title [\"\",{\"text\":\"-\",\"obfuscated\":true},{\"text\":\" \\u231a \"},{\"text\":\"Muerto \",\"bold\":true,\"color\":\"light_purple\"},{\"text\":\"\\u231a \"},{\"text\":\"-\",\"obfuscated\":true}]");
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     public void onSleep(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        long time = player.getWorld().getTime();
-
-        int neededPlayers = calculateNeededPlayers();
-        int onlinePlayers = Bukkit.getOnlinePlayers().size();
-
-        if (onlinePlayers < neededPlayers) {
-            player.sendMessage(MessageUtils.colorMessage("&cNo puedes dormir porque no hay suficientes personas en línea (" + neededPlayers + ")."));
-            event.setCancelled(true);
-            return;
-        }
-
-        if (time < 13000) {
-            player.sendMessage(MessageUtils.colorMessage("&cSolo puedes dormir de noche."));
+        if (!canPlayerSleep(player)) {
             event.setCancelled(true);
             return;
         }
@@ -128,132 +139,150 @@ public class PlayerListeners implements Listener {
         checkAndPassNight(player);
     }
 
-    @EventHandler
-    public void onPlayerLeaveBed(PlayerBedLeaveEvent event) {
-        sleepingPlayers.remove(event.getPlayer());
-        //Bukkit.broadcastMessage(MessageUtils.colorMessage("&e" + event.getPlayer().getName() + " se levanto de la cama"));
-    }
-
-    private int calculateNeededPlayers() {
-        if (dia > 10) {
-            return PendulumSettings.getInstance().getJugadoresNoche(); // Ejemplo de ajuste basado en el día
-        } else {
-            return 1;
+    private boolean canPlayerSleep(Player player) {
+        int neededPlayers = settings.getDia() > 10 ? settings.getJugadoresNoche() : 1;
+        if (Bukkit.getOnlinePlayers().size() < neededPlayers) {
+            player.sendMessage(MessageUtils.colorMessage("&cNo puedes dormir porque no hay suficientes personas en línea (" + neededPlayers + ")."));
+            return false;
         }
+
+        if (player.getWorld().getTime() < NIGHT_START) {
+            player.sendMessage(MessageUtils.colorMessage("&cSolo puedes dormir de noche."));
+            return false;
+        }
+        return true;
     }
 
     private void checkAndPassNight(Player player) {
-        if (sleepingPlayers.size() >= calculateNeededPlayers()) {
-            Bukkit.getServer().getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
+        int neededPlayers = settings.getDia() > 10 ? settings.getJugadoresNoche() : 1;
+        if (sleepingPlayers.size() >= neededPlayers) {
+            Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
                 player.getWorld().setTime(0L);
                 player.setStatistic(Statistic.TIME_SINCE_REST, 0);
-                Bukkit.getServer().broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
-                // Limpiar la lista de jugadores durmiendo
+                Bukkit.broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
                 sleepingPlayers.clear();
-            }, 60L); // 3 segundos después de que un jugador se duerma
+            }, SLEEP_DELAY);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerLeaveBed(PlayerBedLeaveEvent event) {
+        sleepingPlayers.remove(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onConsume(PlayerItemConsumeEvent event) {
+        if (!event.getItem().hasItemMeta() || !event.getItem().getItemMeta().hasDisplayName()) {
+            return;
+        }
+
+        String itemName = event.getItem().getItemMeta().getDisplayName();
+        if (itemName.equalsIgnoreCase(MessageUtils.colorMessage(DIRTY_HEARTHY_NAME))) {
+            handleDirtyHearthyConsumption(event.getPlayer());
+        } else if (itemName.equalsIgnoreCase(MessageUtils.colorMessage(VOIDED_APPLE_NAME))) {
+            handleVoidedAppleConsumption(event.getPlayer());
+        }
+    }
+
+    private void handleDirtyHearthyConsumption(Player player) {
+        PersistentDataContainer data = player.getPersistentDataContainer();
+        int count = data.getOrDefault(dirtyHearthyKey, PersistentDataType.INTEGER, 0);
+
+        if (count >= DIRTY_HEARTHY_MAX) {
+            player.sendMessage(MessageUtils.colorMessage("&cYa has consumido 5 Dirty Hearthy..."));
+            player.sendMessage(MessageUtils.colorMessage("&cDesperdiciando una cabeza, eh?"));
+            return;
+        }
+
+        count++;
+        data.set(dirtyHearthyKey, PersistentDataType.INTEGER, count);
+        player.sendMessage(MessageUtils.colorMessage("&cHas consumido " + count + "/5 Dirty Hearthy"));
+
+        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth + 2.0);
+
+        if (count == DIRTY_HEARTHY_MAX) {
+            player.sendMessage(MessageUtils.colorMessage("&a¡Has alcanzado el máximo de 5 Dirty Hearthy!"));
+        }
+    }
+
+    private void handleVoidedAppleConsumption(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 1, true, false));
+        player.sendMessage(MessageUtils.colorMessage("&dVida Boosteada por 10 minutos."));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerEnterEnd(PlayerPortalEvent event) {
+        if (settings.getDia() < 10 && event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            player.sendMessage(MessageUtils.colorMessage("&cNo puedes entrar al End aún."));
+
+            Location safeLocation = player.getLocation().add(3, 1.5, 0);
+            player.teleport(safeLocation);
+            player.playSound(safeLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (settings.getDia() >= 15 && event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+            event.getPlayer().setCooldown(Material.ENDER_PEARL, ENDER_PEARL_COOLDOWN);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onEggThrow(PlayerEggThrowEvent event) {
+        if (settings.getDia() >= 15 && event.getNumHatches() > 0) {
+            event.setHatching(false);
+            if (Math.random() < WITHER_SPAWN_CHANCE) {
+                spawnWitherFromEgg(event);
+            }
+        }
+    }
+
+    private void spawnWitherFromEgg(PlayerEggThrowEvent event) {
+        Wither wither = (Wither) event.getEgg().getLocation().getWorld().spawnEntity(event.getEgg().getLocation(), EntityType.WITHER);
+        wither.setCustomName("Pollito Bebé de " + event.getPlayer().getName());
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
         }
     }
 
     @EventHandler
     public void onUseTotem(EntityResurrectEvent event) {
-        if (event.getEntity() instanceof Player) {
-            if (!event.isCancelled()) {
-                Bukkit.getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + event.getEntity().getName() + "&r&d ha usado un tótem de la inmortalidad!"));
-            }
+        if (event.getEntity() instanceof Player && !event.isCancelled()) {
+            Bukkit.broadcastMessage(MessageUtils.colorMessage("&d&l" + event.getEntity().getName() + "&r&d ha usado un tótem de la inmortalidad!"));
         }
     }
 
     @EventHandler
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-        for (String castigo : castigosDia0) {
+        for (String castigo : settings.getCastigosDia0()) {
             if (player.getName().equals(castigo)) {
                 player.setHealthScale(player.getHealthScale() - 4.0);
+                break;
             }
         }
     }
 
-    @EventHandler
-    public void onConsume(PlayerItemConsumeEvent event) {
-        if (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName()) {
-            if (event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase(MessageUtils.colorMessage("&c&lDirty Hearthy"))) {
-                PersistentDataContainer data = event.getPlayer().getPersistentDataContainer();
-                NamespacedKey key = new NamespacedKey(PendulumPlugin.getInstance(), "DirtyCount");
-
-                int count = data.getOrDefault(key, PersistentDataType.INTEGER, 0);
-
-                if (count >= 5) {
-                    event.getPlayer().sendMessage(MessageUtils.colorMessage("&cYa has consumido 5 Dirty Hearthy..."));
-                    event.getPlayer().sendMessage(MessageUtils.colorMessage("&cDesperdiciando una cabeza, eh?"));
-                    return;
-                }
-
-                count++;
-                data.set(key, PersistentDataType.INTEGER, count);
-                event.getPlayer().sendMessage(MessageUtils.colorMessage("&cHas consumido " + count + "/5 Dirty Hearthy"));
-
-                double maxHealth = event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-                event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealth + 2.0); // Aumenta 1 corazón (2 puntos de vida)
-
-                if (count == 5) {
-                    event.getPlayer().sendMessage(MessageUtils.colorMessage("&a¡Has alcanzado el máximo de 5 Dirty Hearthy!"));
-                }
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onChestOpen(PlayerInteractEvent event) {
+        if (settings.getDia() >= 15 ){
+            if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
+                return;
+            }
+            Material blockType = event.getClickedBlock().getType();
+            if (blockType != Material.CHEST && blockType != Material.TRAPPED_CHEST) {
+                return;
             }
 
-            if (event.getItem().getItemMeta().getDisplayName().equalsIgnoreCase(MessageUtils.colorMessage("&d&lVoided Apple"))) {
-                PotionEffect effect = new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 1, true, false);
-                event.getPlayer().addPotionEffect(effect, true);
-                event.getPlayer().sendMessage(MessageUtils.colorMessage("&dVida Boosteada por 10 minutos."));
+            if (Math.random() < CHEST_CHANCE) {
+                Location chestLocation = event.getClickedBlock().getLocation();
+                event.getPlayer().getWorld().playSound(chestLocation, Sound.ENTITY_TNT_PRIMED, 1.0F, 1.0F);
             }
         }
     }
-
-    @EventHandler
-    public void onPlayerEnterEnd(PlayerPortalEvent event) {
-        if (dia < 10) {
-            if (event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(MessageUtils.colorMessage("&cNo puedes entrar al End aún."));
-
-                // Teletransportar al jugador fuera del portal
-                Location teleportLocation = event.getPlayer().getLocation().add(3, 1.5, 0); // Ajusta las coordenadas según sea necesario
-                event.getPlayer().teleport(teleportLocation);
-
-                // Reproducir sonido de teletransporte
-                event.getPlayer().playSound(teleportLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
-            }
-        }
-    }
-
-    @EventHandler
-    public void onTeleport(PlayerTeleportEvent event) {
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL && dia >= 15) {
-            event.getPlayer().setCooldown(Material.ENDER_PEARL, 20 * 6); // 1 minuto de cooldown
-        }
-    }
-
-    // Detectar cuando se tira un huevo y genera pollitos bebe
-    @EventHandler
-    public void onEggThrow(PlayerEggThrowEvent event) {
-        if (dia >= 15) {
-            if (event.getNumHatches() > 0) {
-                event.setHatching(false);
-                if (Math.random() < 0.1) {
-                    Wither wither = (Wither) event.getEgg().getLocation().getWorld().spawnEntity(event.getEgg().getLocation(), EntityType.WITHER);
-                    wither.setCustomName("Pollito Bebé de " + event.getPlayer().getName());
-
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
-                    }
-                }
-            }
-
-
-        }
-    }
-
-
 }
-
-
-

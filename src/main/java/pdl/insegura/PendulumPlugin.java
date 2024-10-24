@@ -52,7 +52,7 @@ public class PendulumPlugin extends JavaPlugin {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new PlayerListeners(), this);
+        getServer().getPluginManager().registerEvents(new PlayerListeners(this), this);
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
         getServer().getPluginManager().registerEvents(new StructureGenerator(this), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
@@ -70,7 +70,7 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SpawnListener(), this);
         getServer().getPluginManager().registerEvents(new EndManager(this), this);
         getServer().getPluginManager().registerEvents(new VoidedKnight(this), this);
-        getServer().getPluginManager().registerEvents(new InfernalGuardian(), this);
+        getServer().getPluginManager().registerEvents(new InfernalGuardian(this), this);
     }
 
     private void registerCommands() {
