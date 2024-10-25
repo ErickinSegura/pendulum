@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.world.ChunkPopulateEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,13 +21,14 @@ import org.bukkit.util.Vector;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.block.Block;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class EndManager implements Listener {
     private final Plugin plugin;
     private final Random random = new Random();
     private int attackCounter = 0;
-    private BossBar dragonBar;
 
     public EndManager(Plugin plugin) {
         this.plugin = plugin;
@@ -42,29 +44,42 @@ public class EndManager implements Listener {
                     for (EnderDragon dragon : endWorld.getEntitiesByClass(EnderDragon.class)) {
                         if (!dragon.isDead()) {
                             dragonPeriodicAttack(dragon);
+                            // Probabilidad aleatoria de realizar un ataque especial
+                            if (random.nextDouble() < 0.4) {
+                                dragonSpecialAttack(dragon);
+                            }
                         }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 200L, 200L);
+            // Random delay between 10-20 seconds (200-400 ticks)
+        }.runTaskTimer(plugin, 200L, 200L + random.nextInt(200));
     }
 
     @EventHandler
     public void onEntityGetHit(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof EnderDragon dragon) {
-            if (event.getDamager() instanceof Arrow || event.getDamager() instanceof Snowball) {
+            if (event.getDamager() instanceof Explosive ||
+                    event.getCause() == EntityDamageByEntityEvent.DamageCause.BLOCK_EXPLOSION ||
+                    event.getCause() == EntityDamageByEntityEvent.DamageCause.ENTITY_EXPLOSION) {
                 event.setCancelled(true);
                 return;
-            }
-
-            if (random.nextDouble() < 0.4) {
-                dragonSpecialAttack(dragon);
             }
 
             if (dragon.getHealth() <= dragon.getMaxHealth() * 0.75) {
                 enragedDragon(dragon);
             }
         }
+
+        if (event.getEntity() instanceof Endermite || event.getEntity() instanceof Silverfish) {
+            if (event.getDamager() instanceof Explosive ||
+                    event.getCause() == EntityDamageByEntityEvent.DamageCause.BLOCK_EXPLOSION ||
+                    event.getCause() == EntityDamageByEntityEvent.DamageCause.ENTITY_EXPLOSION) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
 
         if (event.getEntity() instanceof EnderCrystal crystal) {
             if (event.getDamager() instanceof Arrow || event.getDamager() instanceof Snowball) {
@@ -152,7 +167,7 @@ public class EndManager implements Listener {
         World world = dragon.getWorld();
         Location dragonLoc = dragon.getLocation();
 
-        switch (random.nextInt(12)) { // Aumentado a 12 tipos de ataques
+        switch (random.nextInt(25)) { // Aumentado a 25 tipos de ataques
             case 0: // Lluvia de rayos con TNT
                 new BukkitRunnable() {
                     int count = 0;
@@ -317,26 +332,400 @@ public class EndManager implements Listener {
                 ravager.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
                 ravager.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1));
                 break;
+            case 12: // Tormenta de End Crystals
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 3 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                            if (nearby instanceof Player) {
+                                Location crystalLoc = nearby.getLocation().add(
+                                        random.nextInt(10) - 5,
+                                        5,
+                                        random.nextInt(10) - 5
+                                );
+                                EnderCrystal crystal = world.spawn(crystalLoc, EnderCrystal.class);
+                                crystal.setShowingBottom(false);
+                                crystal.setInvulnerable(false);
+
+                                // Explotar después de un tiempo
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!crystal.isDead()) {
+                                            crystal.getWorld().createExplosion(crystal.getLocation(), 4F, false);
+                                            crystal.remove();
+                                        }
+                                    }
+                                }.runTaskLater(plugin, 40L);
+                            }
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                break;
+
+            case 13: // Jaula de Bedrock temporal
+                for (Entity nearby : dragon.getNearbyEntities(40, 40, 40)) {
+                    if (nearby instanceof Player player) {
+                        Location playerLoc = player.getLocation();
+                        List<Location> cageBlocks = new ArrayList<>();
+
+                        // Crear jaula temporal
+                        for (int x = -1; x <= 1; x++) {
+                            for (int y = 0; y <= 2; y++) {
+                                for (int z = -1; z <= 1; z++) {
+                                    if (y == 0 || y == 2 || x == -1 || x == 1 || z == -1 || z == 1) {
+                                        Location blockLoc = playerLoc.clone().add(x, y, z);
+                                        blockLoc.getBlock().setType(Material.BEDROCK);
+                                        cageBlocks.add(blockLoc);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Remover la jaula después de 5 segundos
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                for (Location loc : cageBlocks) {
+                                    loc.getBlock().setType(Material.AIR);
+                                }
+                            }
+                        }.runTaskLater(plugin, 100L);
+                    }
+                }
+                break;
+
+            case 14: // Invocación de Shulkers explosivos
+                for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                    if (nearby instanceof Player) {
+                        Location shulkerLoc = nearby.getLocation().add(0, 3, 0);
+                        Shulker shulker = (Shulker) world.spawnEntity(shulkerLoc, EntityType.SHULKER);
+                        shulker.setGlowing(true);
+                        shulker.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 100, 4));
+
+                        // Explotar después de un tiempo
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (!shulker.isDead()) {
+                                    Location loc = shulker.getLocation();
+                                    shulker.remove();
+                                    world.createExplosion(loc, 4F, false);
+                                    for (int i = 0; i < 3; i++) {
+                                        world.spawnEntity(loc, EntityType.SHULKER_BULLET);
+                                    }
+                                }
+                            }
+                        }.runTaskLater(plugin, 60L);
+                    }
+                }
+                break;
+
+            case 15: // Tormenta de rayos y endermites
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 5 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (Entity nearby : dragon.getNearbyEntities(25, 25, 25)) {
+                            if (nearby instanceof Player) {
+                                Location loc = nearby.getLocation();
+                                world.strikeLightning(loc);
+
+                                // Spawn endermites con efectos
+                                Endermite endermite = (Endermite) world.spawnEntity(loc, EntityType.ENDERMITE);
+                                endermite.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
+                                endermite.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 1));
+                            }
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 15L);
+                break;
+
+            case 16: // Teletransporte masivo
+                for (Entity nearby : dragon.getNearbyEntities(50, 50, 50)) {
+                    if (nearby instanceof Player player) {
+                        // Teletransportar a una posición aleatoria en el aire
+                        Location teleportLoc = player.getLocation().add(
+                                random.nextInt(40) - 20,
+                                random.nextInt(20) + 10,
+                                random.nextInt(40) - 20
+                        );
+                        player.teleport(teleportLoc);
+
+                        // Efectos visuales y de sonido
+                        world.spawnParticle(Particle.PORTAL, player.getLocation(), 100, 1, 1, 1, 0.5);
+                        world.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.5f);
+
+                        // Invocar algunos endermites en la ubicación original
+                        Location originalLoc = player.getLocation();
+                        for (int i = 0; i < 3; i++) {
+                            world.spawnEntity(originalLoc, EntityType.ENDERMITE);
+                        }
+                    }
+                }
+                break;
+
+            case 17: // Evoker corrupto
+                Location evokerLoc = dragonLoc.clone().add(random.nextInt(20) - 10, -2, random.nextInt(20) - 10);
+                Evoker evoker = (Evoker) world.spawnEntity(evokerLoc, EntityType.EVOKER);
+                evoker.setGlowing(true);
+                evoker.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 2));
+                evoker.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+
+                // Darle una montura especial
+                Ravager mount = (Ravager) world.spawnEntity(evokerLoc, EntityType.RAVAGER);
+                mount.addPassenger(evoker);
+                mount.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+
+                // Invocar Vex modificados periódicamente
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 5 || evoker.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (int i = 0; i < 3; i++) {
+                            Vex vex = (Vex) world.spawnEntity(evoker.getLocation(), EntityType.VEX);
+                            vex.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 1));
+                            vex.setGlowing(true);
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 100L);
+                break;
+
+            case 18: // Lluvia de pociones
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 5 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                            if (nearby instanceof Player) {
+                                Location potionLoc = nearby.getLocation().clone().add(
+                                        random.nextInt(10) - 5,
+                                        10,
+                                        random.nextInt(10) - 5
+                                );
+
+                                ThrownPotion potion = (ThrownPotion) world.spawnEntity(potionLoc, EntityType.SPLASH_POTION);
+                                ItemStack potionItem = new ItemStack(Material.SPLASH_POTION);
+                                PotionMeta meta = (PotionMeta) potionItem.getItemMeta();
+
+                                // Efectos aleatorios negativos
+                                switch (random.nextInt(5)) {
+                                    case 0:
+                                        meta.addCustomEffect(new PotionEffect(PotionEffectType.POISON, 200, 1), true);
+                                        break;
+                                    case 1:
+                                        meta.addCustomEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 1), true);
+                                        break;
+                                    case 2:
+                                        meta.addCustomEffect(new PotionEffect(PotionEffectType.SLOW, 200, 2), true);
+                                        break;
+                                    case 3:
+                                        meta.addCustomEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1), true);
+                                        break;
+                                    case 4:
+                                        meta.addCustomEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0), true);
+                                        break;
+                                }
+
+                                potionItem.setItemMeta(meta);
+                                potion.setItem(potionItem);
+                            }
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                break;
+
+            case 19: // Ejército de Silverfish explosivos
+                for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                    if (nearby instanceof Player) {
+                        Location spawnLoc = nearby.getLocation();
+                        for (int i = 0; i < 8; i++) {
+                            Silverfish silverfish = (Silverfish) world.spawnEntity(spawnLoc, EntityType.SILVERFISH);
+                            silverfish.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+                            silverfish.setGlowing(true);
+
+                            // Explotar al morir
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    if (silverfish.isDead()) {
+                                        this.cancel();
+                                        world.createExplosion(silverfish.getLocation(), 2F, false);
+                                    }
+                                }
+                            }.runTaskTimer(plugin, 0L, 5L);
+                        }
+                    }
+                }
+                break;
+
+            case 20: // Lluvia de anvils con TNT
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 3 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                            if (nearby instanceof Player) {
+                                Location anvilLoc = nearby.getLocation().clone().add(
+                                        random.nextInt(10) - 5,
+                                        15,
+                                        random.nextInt(10) - 5
+                                );
+
+                                // Crear anvil cayendo
+                                world.spawnFallingBlock(anvilLoc, Material.ANVIL.createBlockData());
+
+                                // TNT que cae junto con el anvil
+                                TNTPrimed tnt = world.spawn(anvilLoc, TNTPrimed.class);
+                                tnt.setFuseTicks(40);
+                            }
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 20L);
+                break;
+
+            case 21: // Guardián del End con minions
+                Location guardianLoc = dragonLoc.clone().add(random.nextInt(20) - 10, -2, random.nextInt(20) - 10);
+                Guardian guardian = (Guardian) world.spawnEntity(guardianLoc, EntityType.ELDER_GUARDIAN);
+                guardian.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 2));
+                guardian.setGlowing(true);
+
+                // Spawn minions (guardianes normales)
+                for (int i = 0; i < 4; i++) {
+                    Location minionLoc = guardianLoc.clone().add(
+                            random.nextInt(6) - 3,
+                            random.nextInt(4) - 2,
+                            random.nextInt(6) - 3
+                    );
+                    Guardian minion = (Guardian) world.spawnEntity(minionLoc, EntityType.GUARDIAN);
+                    minion.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+                }
+                break;
+
+            case 22: // Campo minado de End Crystals
+                List<Location> crystalLocations = new ArrayList<>();
+                for (int i = 0; i < 8; i++) {
+                    Location crystalLoc = dragonLoc.clone().add(
+                            random.nextInt(40) - 20,
+                            -2,
+                            random.nextInt(40) - 20
+                    );
+                    EnderCrystal crystal = world.spawn(crystalLoc, EnderCrystal.class);
+                    crystal.setShowingBottom(false);
+                    crystalLocations.add(crystalLoc);
+                }
+
+                // Conectar crystales con rayos después de un tiempo
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < crystalLocations.size() - 1; i++) {
+                            Location loc1 = crystalLocations.get(i);
+                            Location loc2 = crystalLocations.get(i + 1);
+                            world.strikeLightning(loc1);
+                            world.strikeLightning(loc2);
+                            world.createExplosion(loc1, 4F, false);
+                            world.createExplosion(loc2, 4F, false);
+                        }
+                    }
+                }.runTaskLater(plugin, 60L);
+                break;
+
+            case 23: // Tornado de Shulker Bullets
+                Location centerLoc = dragonLoc.clone();
+                new BukkitRunnable() {
+                    double angle = 0;
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 20 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+
+                        double x = Math.cos(angle) * 5;
+                        double z = Math.sin(angle) * 5;
+                        Location bulletLoc = centerLoc.clone().add(x, 0, z);
+
+                        ShulkerBullet bullet = (ShulkerBullet) world.spawnEntity(bulletLoc, EntityType.SHULKER_BULLET);
+                        bullet.setGlowing(true);
+
+                        angle += Math.PI / 8;
+                    }
+                }.runTaskTimer(plugin, 0L, 2L);
+                break;
+
+            case 24: // Ataque definitivo
+                // Combina varios ataques en uno solo
+                // Invocar Wither Skeleton en Ravager
+                Location witherLoc = dragonLoc.clone();
+                Ravager ravagers = (Ravager) world.spawnEntity(witherLoc, EntityType.RAVAGER);
+                WitherSkeleton skeletons = (WitherSkeleton) world.spawnEntity(witherLoc, EntityType.WITHER_SKELETON);
+                ravagers.addPassenger(skeletons);
+                ravagers.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2));
+                skeletons.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 2));
+
+                // Lluvia de TNT
+                new BukkitRunnable() {
+                    int count = 0;
+                    @Override
+                    public void run() {
+                        if (count++ >= 5 || dragon.isDead()) {
+                            this.cancel();
+                            return;
+                        }
+                        for (Entity nearby : dragon.getNearbyEntities(30, 30, 30)) {
+                            if (nearby instanceof Player) {
+                                Location tntLoc = nearby.getLocation().clone().add(
+                                        random.nextInt(10) - 5,
+                                        10,
+                                        random.nextInt(10) - 5
+                                );
+                                TNTPrimed tnt = world.spawn(tntLoc, TNTPrimed.class);
+                                tnt.setFuseTicks(30);
+                            }
+                        }
+                    }
+                }.runTaskTimer(plugin, 0L, 10L);
+
+                // Invocar Shulkers y End Crystals
+                for (int i = 0; i < 4; i++) {
+                    Location spawnLoc = dragonLoc.clone().add(
+                            random.nextInt(20) - 10,
+                            0,
+                            random.nextInt(20) - 10
+                    );
+                    world.spawnEntity(spawnLoc, EntityType.SHULKER);
+                    Location crystalLoc = spawnLoc.clone().add(0, 3, 0);
+                    EnderCrystal crystal = world.spawn(crystalLoc, EnderCrystal.class);
+                    crystal.setShowingBottom(false);
+                }
+                break;
         }
     }
 
     private void enragedDragon(EnderDragon dragon) {
-        // Actualizar o crear la barra del jefe
-        if (dragonBar == null) {
-            dragonBar = Bukkit.createBossBar(
-                    ChatColor.RED + "☠ Dragón Enfurecido ☠",
-                    BarColor.RED,
-                    BarStyle.SEGMENTED_12
-            );
-        }
-
-        // Mostrar la barra a todos los jugadores cercanos
-        for (Entity nearby : dragon.getNearbyEntities(100, 100, 100)) {
-            if (nearby instanceof Player) {
-                dragonBar.addPlayer((Player) nearby);
-            }
-        }
-
         // Efectos visuales de furia
         dragon.getWorld().spawnParticle(Particle.FLAME, dragon.getLocation(), 100, 3, 3, 3, 0.1);
         dragon.getWorld().spawnParticle(Particle.DRAGON_BREATH, dragon.getLocation(), 50, 2, 2, 2, 0.05);
@@ -352,9 +741,6 @@ public class EndManager implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 100, 1));
             }
         }
-
-        // Actualizar el progreso de la barra basado en la vida del dragón
-        dragonBar.setProgress(dragon.getHealth() / dragon.getMaxHealth());
     }
 
     @EventHandler
@@ -380,11 +766,6 @@ public class EndManager implements Listener {
             event.getDrops().add(new ItemStack(Material.DRAGON_EGG, 1));
             event.getDrops().add(new ItemStack(Material.ELYTRA, 1));
             event.getDrops().add(new ItemStack(Material.DRAGON_HEAD, 1));
-
-            if (dragonBar != null) {
-                dragonBar.removeAll();
-                dragonBar = null;
-            }
 
         }
     }
@@ -425,20 +806,38 @@ public class EndManager implements Listener {
                         if (block.getType() == Material.END_STONE) {
                             // Probabilidades de diferentes bloques
                             double rand = random.nextDouble();
-                            if (rand < 0.1) { // 10% de probabilidad
+                            if (rand < 0.25) { // 10% de probabilidad
                                 block.setType(Material.END_STONE_BRICKS);
-                            } else if (rand < 0.15) { // 5% adicional
-                                block.setType(Material.END_STONE_BRICK_STAIRS);
-                                // Rotación aleatoria para las escaleras
-                                org.bukkit.block.data.Directional stair = (org.bukkit.block.data.Directional) block.getBlockData();
-                                stair.setFacing(org.bukkit.block.BlockFace.values()[random.nextInt(4)]);
-                                block.setBlockData(stair);
-                            } else if (rand < 0.17) { // 2% adicional
-                                block.setType(Material.END_STONE_BRICK_WALL);
-                            } else if (rand < 0.19) { // 2% adicional
-                                block.setType(Material.PURPUR_BLOCK);
-                            } else if (rand < 0.20) { // 1% adicional
-                                block.setType(Material.PURPUR_PILLAR);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            Chunk chunks = e.getChunk();
+            int centerX = 0;
+            int centerZ = 0;
+
+            // Verificar si este chunk está en el área central del End
+            if (Math.abs(chunks.getX()) <= 1 && Math.abs(chunks.getZ()) <= 1) {
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        // Coordenadas absolutas
+                        int absX = chunks.getX() * 16 + x;
+                        int absZ = chunks.getZ() * 16 + z;
+
+                        // Verificar si estamos cerca de donde debería haber un pilar
+                        if (isPillarLocation(absX, absZ)) {
+                            // Generar pilar con variación
+                            for (int y = 0; y < 256; y++) {
+                                Block block = chunks.getBlock(x, y, z);
+                                if (block.getType() == Material.OBSIDIAN) {
+                                    // 30% de probabilidad de bedrock
+                                    if (random.nextDouble() < 0.3) {
+                                        block.setType(Material.BEDROCK);
+                                    }
+                                }
                             }
                         }
                     }
@@ -446,4 +845,23 @@ public class EndManager implements Listener {
             }
         }
     }
+
+    // Método auxiliar para determinar si una coordenada corresponde a un pilar
+    private boolean isPillarLocation(int x, int z) {
+        // Coordenadas aproximadas de los pilares del End
+        int[][] pillarPositions = {
+                {-43, 0}, {-43, -43}, {0, -43}, {43, -43},
+                {43, 0}, {43, 43}, {0, 43}, {-43, 43}
+        };
+
+        for (int[] pos : pillarPositions) {
+            // Verificar si las coordenadas están dentro del radio de un pilar
+            if (Math.abs(x - pos[0]) <= 3 && Math.abs(z - pos[1]) <= 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

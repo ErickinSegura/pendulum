@@ -27,6 +27,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import static org.bukkit.Bukkit.getServer;
+
 public class PlayerListeners implements Listener {
     private static final String DIRTY_HEARTHY_NAME = "&c&lDirty Hearthy";
     private static final String VOIDED_APPLE_NAME = "&d&lVoided Apple";
@@ -84,11 +86,29 @@ public class PlayerListeners implements Listener {
     }
 
     private void broadcastDeathMessages(Player player, Location location) {
-        Bukkit.broadcastMessage(MessageUtils.colorMessage("&dA &5&l" + player.getName() + "&r&d se le ha acabado el tiempo..."));
-        if (player.getKiller() == null) {
-            Bukkit.broadcastMessage(MessageUtils.colorMessage("Coordenadas de Muerte: &l" + location.getBlockX() + "/" + location.getBlockY() + "/" + location.getBlockZ()));
+        if (player != null) {
+            // First message - player death announcement
+            String playerName = player.getName();
+            getServer().broadcastMessage(MessageUtils.colorMessage("&dA &5&l" + playerName + "&r&d se le ha acabado el tiempo..."));
+
+            // Second message - death coordinates (only if no killer)
+            if (player.getKiller() == null && location != null) {
+                String coordMessage = String.format("Coordenadas de Muerte: &l%d/%d/%d",
+                        location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                getServer().broadcastMessage(MessageUtils.colorMessage(coordMessage));
+            }
+
+            // Third message - custom death message
+            String deathMessage = null;
+            try {
+                deathMessage = DeathMessages.getInstance().getDeathMessage(playerName);
+                if (deathMessage != null) {
+                    getServer().broadcastMessage(MessageUtils.colorMessage(deathMessage));
+                }
+            } catch (NullPointerException e) {
+                getServer().broadcastMessage(MessageUtils.colorMessage("&7Fue consumido por el vacío del tiempo"));
+            }
         }
-        Bukkit.broadcastMessage(MessageUtils.colorMessage(DeathMessages.getInstance().getDeathMessage(player.getName())));
     }
 
     private void createDeathMemorial(Location location, Player player) {
@@ -135,8 +155,21 @@ public class PlayerListeners implements Listener {
         }
 
         sleepingPlayers.add(player);
-        Bukkit.broadcastMessage(MessageUtils.colorMessage("&e" + player.getName() + " se fue a dormir"));
+        getServer().broadcastMessage(MessageUtils.colorMessage("&e" + player.getName() + " se fue a dormir"));
         checkAndPassNight(player);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerEnterEnd(PlayerPortalEvent event) {
+        if (settings.getDia() < 10 && event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            player.sendMessage(MessageUtils.colorMessage("&cNo puedes entrar al End aún."));
+
+            Location safeLocation = player.getLocation().add(3, 1.5, 0);
+            player.teleport(safeLocation);
+            player.playSound(safeLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+        }
     }
 
     private boolean canPlayerSleep(Player player) {
@@ -159,7 +192,7 @@ public class PlayerListeners implements Listener {
             Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
                 player.getWorld().setTime(0L);
                 player.setStatistic(Statistic.TIME_SINCE_REST, 0);
-                Bukkit.broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
+                getServer().broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
                 sleepingPlayers.clear();
             }, SLEEP_DELAY);
         }
@@ -212,19 +245,6 @@ public class PlayerListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerEnterEnd(PlayerPortalEvent event) {
-        if (settings.getDia() < 10 && event.getCause() == PlayerTeleportEvent.TeleportCause.END_PORTAL) {
-            event.setCancelled(true);
-            Player player = event.getPlayer();
-            player.sendMessage(MessageUtils.colorMessage("&cNo puedes entrar al End aún."));
-
-            Location safeLocation = player.getLocation().add(3, 1.5, 0);
-            player.teleport(safeLocation);
-            player.playSound(safeLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
     public void onTeleport(PlayerTeleportEvent event) {
         if (settings.getDia() >= 15 && event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             event.getPlayer().setCooldown(Material.ENDER_PEARL, ENDER_PEARL_COOLDOWN);
@@ -253,7 +273,7 @@ public class PlayerListeners implements Listener {
     @EventHandler
     public void onUseTotem(EntityResurrectEvent event) {
         if (event.getEntity() instanceof Player && !event.isCancelled()) {
-            Bukkit.broadcastMessage(MessageUtils.colorMessage("&d&l" + event.getEntity().getName() + "&r&d ha usado un tótem de la inmortalidad!"));
+            getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + event.getEntity().getName() + "&r&d ha usado un tótem de la inmortalidad!"));
         }
     }
 

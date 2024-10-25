@@ -7,6 +7,8 @@ import pdl.insegura.PendulumPlugin;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
 
+import static org.bukkit.Bukkit.getServer;
+
 public class RuletaCommand implements SubCommand {
     private static final int ANIMATION_DURATION = 5; // Duración en segundos
     private static final double INITIAL_SPEED = 0.1; // Velocidad inicial entre cambios
@@ -82,11 +84,11 @@ public class RuletaCommand implements SubCommand {
                     }
 
                     // Mensaje final con formato especial
-                    Bukkit.broadcastMessage("");
-                    Bukkit.broadcastMessage(MessageUtils.colorMessage("&8&l≫ &d&l&k||&r &6&lRESULTADO FINAL&r &d&l&k||"));
-                    Bukkit.broadcastMessage(MessageUtils.colorMessage("&7El reto seleccionado es:"));
-                    Bukkit.broadcastMessage(MessageUtils.colorMessage("&d&l" + retos[finalIndex]));
-                    Bukkit.broadcastMessage("");
+                    getServer().broadcastMessage("");
+                    getServer().broadcastMessage(MessageUtils.colorMessage("&8&l≫ &d&l&k||&r &6&lRESULTADO FINAL&r &d&l&k||"));
+                    getServer().broadcastMessage(MessageUtils.colorMessage("&7El reto seleccionado es:"));
+                    getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + retos[finalIndex]));
+                    getServer().broadcastMessage("");
 
                     this.cancel();
                 }
