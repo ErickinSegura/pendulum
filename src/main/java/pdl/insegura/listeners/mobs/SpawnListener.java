@@ -10,13 +10,19 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import pdl.insegura.listeners.mobs.customs.ExplosivePenguinVillager;
 import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.listeners.mobs.customs.InfernalGuardian;
 
 import java.util.List;
+import java.util.Random;
 
 public class SpawnListener implements Listener {
+
+    private final Random random = new Random();
 
     @EventHandler
     public void onEntitySpawn(CreatureSpawnEvent event) {
@@ -33,6 +39,13 @@ public class SpawnListener implements Listener {
         }
 
         if (PendulumSettings.getInstance().getDia() >= 10) {
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 2, false, true));
+            // Velocidad 5
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, true));
+            // Salto 2
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1, false, true));
+
+
             if (event.getEntity() instanceof Skeleton) {
                 ItemStack bowPunch = new ItemStack(Material.BOW);
                 ItemMeta bowPunchMeta = bowPunch.getItemMeta();
@@ -97,6 +110,41 @@ public class SpawnListener implements Listener {
                 }
             }
 
+        }
+
+        if (PendulumSettings.getInstance().getDia() >= 20) {
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 4, false, true));
+            // Velocidad 5
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 4, false, true));
+            // Resistencia 2
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 1, false, true));
+            // Salto
+            event.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1, false, true));
+
+
+            if (event.getEntity() instanceof Skeleton) {
+                // 50% de probabilidad de dar flechas de ceguera
+                if (random.nextBoolean()) {
+                    ItemStack arrowBlindness = new ItemStack(Material.TIPPED_ARROW, 64);
+                    PotionMeta arrowMeta = (PotionMeta) arrowBlindness.getItemMeta();
+
+                    // Añadir efecto de ceguera por 10 minutos (600 segundos)
+                    arrowMeta.addCustomEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * 600, 0), true);
+                    arrowBlindness.setItemMeta(arrowMeta);
+
+                    // Dar al esqueleto el arco con punch y las flechas de ceguera
+                    ItemStack bow = new ItemStack(Material.BOW);
+                    ItemMeta bowMeta = bow.getItemMeta();
+                    bowMeta.addEnchant(Enchantment.ARROW_KNOCKBACK, 10, true);
+                    bow.setItemMeta(bowMeta);
+
+                    // Equipar al esqueleto
+                    event.getEntity().getEquipment().setItemInMainHand(bow);
+                    event.getEntity().getEquipment().setItemInMainHandDropChance(0.0F);
+                    event.getEntity().getEquipment().setItemInOffHand(arrowBlindness);
+                    event.getEntity().getEquipment().setItemInOffHandDropChance(0.0F);
+                }
+            }
         }
     }
 

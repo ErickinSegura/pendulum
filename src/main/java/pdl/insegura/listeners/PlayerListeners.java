@@ -23,7 +23,9 @@ import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
+import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -38,6 +40,9 @@ public class PlayerListeners implements Listener {
     private static final int ENDER_PEARL_COOLDOWN = 120;
     private static final double WITHER_SPAWN_CHANCE = 0.1;
     private static final double CHEST_CHANCE = 0.25;
+
+    private static final double TOTEM_FAIL_CHANCE = 0.99; // 1% de probabilidad de fallo
+    private final Random random = new Random();
 
     private final Set<Player> sleepingPlayers = Collections.newSetFromMap(new WeakHashMap<>());
     private final PendulumSettings settings = PendulumSettings.getInstance();
@@ -154,6 +159,10 @@ public class PlayerListeners implements Listener {
             return;
         }
 
+        if (settings.getDia() < 20) {
+            player.setStatistic(Statistic.TIME_SINCE_REST, 0);
+        }
+
         sleepingPlayers.add(player);
         getServer().broadcastMessage(MessageUtils.colorMessage("&e" + player.getName() + " se fue a dormir"));
         checkAndPassNight(player);
@@ -194,6 +203,9 @@ public class PlayerListeners implements Listener {
                 player.setStatistic(Statistic.TIME_SINCE_REST, 0);
                 getServer().broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
                 sleepingPlayers.clear();
+                if (settings.getDia() < 20) {
+                    player.setStatistic(Statistic.TIME_SINCE_REST, 0);
+                }
             }, SLEEP_DELAY);
         }
     }
@@ -270,11 +282,47 @@ public class PlayerListeners implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onUseTotem(EntityResurrectEvent event) {
-        if (event.getEntity() instanceof Player && !event.isCancelled()) {
-            getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + event.getEntity().getName() + "&r&d ha usado un tótem de la inmortalidad!"));
+        if (!(event.getEntity() instanceof Player)) {
+            return;
         }
+
+        Player player = (Player) event.getEntity();
+
+        // Si estamos antes del día 20, el tótem funciona normal
+        if (settings.getDia() < 20) {
+            getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad!"));
+            return;
+        }
+
+        // A partir del día 20, aplicamos la probabilidad de fallo
+        double roll = random.nextDouble();
+        int rollPercentage = (int)(roll * 100); // Convertimos a porcentaje entero
+
+        if (roll >= TOTEM_FAIL_CHANCE) {
+            // Cancelamos el evento de resurrección
+            event.setCancelled(true);
+
+            // Efectos visuales y sonoros del fallo del totem
+            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation(), 100, 0.5, 1, 0.5, 0.1);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 0.5f);
+
+            // Mensaje de fallo del totem con el porcentaje
+            getServer().broadcastMessage(MessageUtils.colorMessage("&4&l¡El tótem de " + player.getName() + " ha fallado! " +
+                    "\n&c[" + rollPercentage + "% >= 99%]"));
+
+            // Programamos la muerte del jugador para el siguiente tick para evitar problemas de sincronización
+            Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
+                player.setHealth(0);
+            }, 1L);
+
+            return;
+        }
+
+        // Si el totem no falla, mostramos el mensaje normal con el porcentaje
+        getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad! " +
+                "\n&7[" + rollPercentage + "% < 99%]"));
     }
 
     @EventHandler
@@ -282,7 +330,7 @@ public class PlayerListeners implements Listener {
         Player player = event.getPlayer();
         for (String castigo : settings.getCastigosDia0()) {
             if (player.getName().equals(castigo)) {
-                player.setHealthScale(player.getHealthScale() - 4.0);
+                player.setHealthScale(player.getHealthScale() - 19.0);
                 break;
             }
         }
