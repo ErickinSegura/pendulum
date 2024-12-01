@@ -147,8 +147,7 @@ public class PlayerListeners implements Listener {
     }
 
     private void displayDeathTitle() {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "title @a times 20 40 20");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "title @a title [\"\",{\"text\":\"-\",\"obfuscated\":true},{\"text\":\" \\u231a \"},{\"text\":\"Muerto \",\"bold\":true,\"color\":\"light_purple\"},{\"text\":\"\\u231a \"},{\"text\":\"-\",\"obfuscated\":true}]");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "animation true 3 0 10");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -284,45 +283,59 @@ public class PlayerListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onUseTotem(EntityResurrectEvent event) {
+        // Si no es un jugador o si el evento fue cancelado, ignoramos
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
-        Player player = (Player) event.getEntity();
+        // Verificamos si el evento fue causado por un totem
+        if (!event.isCancelled() && event.getEntity().getLastDamageCause() != null) {
+            Player player = (Player) event.getEntity();
 
-        // Si estamos antes del día 20, el tótem funciona normal
-        if (settings.getDia() < 20) {
-            getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad!"));
-            return;
+            // Verificamos si el jugador tenía un totem en alguna mano
+            if (hasTotem(player)) {
+                // Si estamos antes del día 20, el tótem funciona normal
+                if (settings.getDia() < 20) {
+                    getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad!"));
+                    return;
+                }
+
+                // A partir del día 20, aplicamos la probabilidad de fallo
+                double roll = random.nextDouble();
+                int rollPercentage = (int)(roll * 100);
+
+                if (roll >= TOTEM_FAIL_CHANCE) {
+                    // Cancelamos el evento de resurrección
+                    event.setCancelled(true);
+
+                    // Efectos visuales y sonoros del fallo del totem
+                    player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation(), 100, 0.5, 1, 0.5, 0.1);
+                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 0.5f);
+
+                    // Mensaje de fallo del totem con el porcentaje
+                    getServer().broadcastMessage(MessageUtils.colorMessage("&4&l¡El tótem de " + player.getName() + " ha fallado! " +
+                            "\n&c[" + rollPercentage + "% >= 99%]"));
+
+                    // Programamos la muerte del jugador para el siguiente tick para evitar problemas de sincronización
+                    Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
+                        player.setHealth(0);
+                    }, 1L);
+
+                    return;
+                }
+
+                // Si el totem no falla, mostramos el mensaje normal con el porcentaje
+                getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad! " +
+                        "\n&7[" + rollPercentage + "% < 99%]"));
+            }
         }
+    }
 
-        // A partir del día 20, aplicamos la probabilidad de fallo
-        double roll = random.nextDouble();
-        int rollPercentage = (int)(roll * 100); // Convertimos a porcentaje entero
-
-        if (roll >= TOTEM_FAIL_CHANCE) {
-            // Cancelamos el evento de resurrección
-            event.setCancelled(true);
-
-            // Efectos visuales y sonoros del fallo del totem
-            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation(), 100, 0.5, 1, 0.5, 0.1);
-            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0f, 0.5f);
-
-            // Mensaje de fallo del totem con el porcentaje
-            getServer().broadcastMessage(MessageUtils.colorMessage("&4&l¡El tótem de " + player.getName() + " ha fallado! " +
-                    "\n&c[" + rollPercentage + "% >= 99%]"));
-
-            // Programamos la muerte del jugador para el siguiente tick para evitar problemas de sincronización
-            Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
-                player.setHealth(0);
-            }, 1L);
-
-            return;
-        }
-
-        // Si el totem no falla, mostramos el mensaje normal con el porcentaje
-        getServer().broadcastMessage(MessageUtils.colorMessage("&d&l" + player.getName() + "&r&d ha usado un tótem de la inmortalidad! " +
-                "\n&7[" + rollPercentage + "% < 99%]"));
+    // Helper method to check if player has totem in either hand
+    private boolean hasTotem(Player player) {
+        Material totemMaterial = Material.TOTEM_OF_UNDYING;
+        return player.getInventory().getItemInMainHand().getType() == totemMaterial ||
+                player.getInventory().getItemInOffHand().getType() == totemMaterial;
     }
 
     @EventHandler

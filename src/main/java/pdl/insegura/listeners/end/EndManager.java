@@ -22,6 +22,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -787,81 +788,48 @@ public class EndManager implements Listener {
 
     @EventHandler
     public void onChunkPopulate(ChunkPopulateEvent e) {
-        if (e.getChunk().getWorld().getName().equalsIgnoreCase("world_the_end")) {
-            for (Entity entity : e.getChunk().getEntities()) {
-                if (entity instanceof ItemFrame frame) {
-                    if (frame.getItem().getType() == Material.ELYTRA) {
-                        ItemStack s = new ItemStack(Material.ELYTRA);
-                        s.setDurability((short) 431);
-                        frame.setItem(s);
-                    }
-                }
+        if (!e.getChunk().getWorld().getName().equalsIgnoreCase("world_the_end")) {
+            return;
+        }
+
+        // Verificar si el chunk está en el rango de la isla principal (-100 a 100 en X y Z)
+        Chunk chunk = e.getChunk();
+        int chunkX = chunk.getX() * 16;
+        int chunkZ = chunk.getZ() * 16;
+
+        if (chunkX > 100 || chunkX < -100 || chunkZ > 100 || chunkZ < -100) {
+            return;
+        }
+
+        // Manejar item frames con elytras
+        for (Entity entity : chunk.getEntities()) {
+            if (entity instanceof ItemFrame frame && frame.getItem().getType() == Material.ELYTRA) {
+                ItemStack s = new ItemStack(Material.ELYTRA);
+                s.setDurability((short) 431);
+                frame.setItem(s);
             }
+        }
 
-            Chunk chunk = e.getChunk();
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    for (int y = 0; y < 256; y++) {
-                        Block block = chunk.getBlock(x, y, z);
-                        if (block.getType() == Material.END_STONE) {
-                            // Probabilidades de diferentes bloques
-                            double rand = random.nextDouble();
-                            if (rand < 0.25) { // 10% de probabilidad
-                                block.setType(Material.END_STONE_BRICKS);
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            Chunk chunks = e.getChunk();
-            int centerX = 0;
-            int centerZ = 0;
-
-            // Verificar si este chunk está en el área central del End
-            if (Math.abs(chunks.getX()) <= 1 && Math.abs(chunks.getZ()) <= 1) {
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        // Coordenadas absolutas
-                        int absX = chunks.getX() * 16 + x;
-                        int absZ = chunks.getZ() * 16 + z;
-
-                        // Verificar si estamos cerca de donde debería haber un pilar
-                        if (isPillarLocation(absX, absZ)) {
-                            // Generar pilar con variación
-                            for (int y = 0; y < 256; y++) {
-                                Block block = chunks.getBlock(x, y, z);
-                                if (block.getType() == Material.OBSIDIAN) {
-                                    // 30% de probabilidad de bedrock
-                                    if (random.nextDouble() < 0.3) {
-                                        block.setType(Material.BEDROCK);
-                                    }
-                                }
-                            }
-                        }
+        // Transformar end stone en la isla principal
+        List<Block> endStoneBlocks = new ArrayList<>();
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                for (int y = 0; y < 256; y++) {
+                    Block block = chunk.getBlock(x, y, z);
+                    if (block.getType() == Material.END_STONE) {
+                        endStoneBlocks.add(block);
                     }
                 }
             }
         }
-    }
 
-    // Método auxiliar para determinar si una coordenada corresponde a un pilar
-    private boolean isPillarLocation(int x, int z) {
-        // Coordenadas aproximadas de los pilares del End
-        int[][] pillarPositions = {
-                {-43, 0}, {-43, -43}, {0, -43}, {43, -43},
-                {43, 0}, {43, 43}, {0, 43}, {-43, 43}
-        };
-
-        for (int[] pos : pillarPositions) {
-            // Verificar si las coordenadas están dentro del radio de un pilar
-            if (Math.abs(x - pos[0]) <= 3 && Math.abs(z - pos[1]) <= 3) {
-                return true;
-            }
+        int blocksToChange = (int)(endStoneBlocks.size() * 0.25);
+        Collections.shuffle(endStoneBlocks, random);
+        for (int i = 0; i < blocksToChange; i++) {
+            endStoneBlocks.get(i).setType(Material.END_STONE_BRICKS);
         }
-        return false;
     }
+
 
 
 }
