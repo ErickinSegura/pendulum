@@ -99,7 +99,7 @@ public class GiveCommand implements SubCommand {
     }
 
     private void giveVoidedShard(Player player) {
-        player.getInventory().addItem(VoidedItems.CrearVoidedShard());
+        player.getInventory().addItem(VoidedItems.CrearVoidedShard(1));
         sendGiveMessage(player, "Voided Shard");
     }
 

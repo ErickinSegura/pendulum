@@ -7,6 +7,7 @@ import org.bukkit.block.banner.PatternType;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -53,13 +54,8 @@ public class VoidedKnight implements Listener {
         bannerMeta.addPattern(new Pattern(DyeColor.PURPLE, PatternType.BORDER));
         bannerMeta.addPattern(new Pattern(DyeColor.MAGENTA, PatternType.GRADIENT_UP));
 
-        bannerMeta.setDisplayName(ChatColor.DARK_PURPLE + "§l✧ Void Knight's Banner ✧");
+        bannerMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "§l✧ Void Knight Banner ✧");
 
-        // Agregar lore al banner
-        List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.LIGHT_PURPLE + "A symbol of the Void Knight's power");
-        lore.add(ChatColor.LIGHT_PURPLE + "Radiates with dark energy");
-        bannerMeta.setLore(lore);
 
         banner.setItemMeta(bannerMeta);
         return banner;
@@ -90,7 +86,7 @@ public class VoidedKnight implements Listener {
         equipment.setLeggings(new ItemStack(Material.NETHERITE_LEGGINGS));
         equipment.setBoots(new ItemStack(Material.NETHERITE_BOOTS));
 
-        entity.setCustomName(ChatColor.DARK_PURPLE + "§l☠ Voided Knight ☠");
+        entity.setCustomName(ChatColor.LIGHT_PURPLE + "§l☠ Voided Knight ☠");
         entity.setCustomNameVisible(true);
         entity.setArrowCooldown(entity.getArrowCooldown()/2);
         entity.setRemoveWhenFarAway(false);
@@ -103,7 +99,7 @@ public class VoidedKnight implements Listener {
 
         if (!bossBars.containsKey(entity.getUniqueId())) {
             BossBar bossBar = Bukkit.createBossBar(
-                    ChatColor.DARK_PURPLE + "§l⚔ Voided Knight ⚔",
+                    ChatColor.LIGHT_PURPLE + "§l⚔ Voided Knight ⚔",
                     BarColor.PURPLE,
                     BarStyle.SEGMENTED_12
             );
@@ -242,7 +238,7 @@ public class VoidedKnight implements Listener {
     }
 
     private void customizeEnhancedMinion(Phantom phantom) {
-        phantom.setCustomName(ChatColor.DARK_PURPLE + "☠ Void Phantom ☠");
+        phantom.setCustomName(ChatColor.LIGHT_PURPLE + "☠ Void Phantom ☠");
         phantom.setCustomNameVisible(true);
         phantom.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
         phantom.setHealth(40);
@@ -363,8 +359,8 @@ public class VoidedKnight implements Listener {
 
         if (entity.getScoreboardTags().contains("voided_minion")) {
             event.getDrops().clear();
-            if (Math.random() < 0.3) { // 30% de probabilidad de soltar un Voided Shard
-                ItemStack voidedShard = CrearVoidedShard();
+            if (Math.random() < 0.8) { // 30% de probabilidad de soltar un Voided Shard
+                ItemStack voidedShard = CrearVoidedShard(1);
                 deathLocation.getWorld().dropItemNaturally(deathLocation, voidedShard);
             }
             activeMinions.remove(entity.getUniqueId());
@@ -384,32 +380,18 @@ public class VoidedKnight implements Listener {
             // Voided Bow mejorado
             ItemStack voidedBow = new ItemStack(Material.BOW);
             ItemMeta bowMeta = voidedBow.getItemMeta();
-            bowMeta.setDisplayName(ChatColor.DARK_PURPLE + "§l✧ Void Striker ✧");
-            List<String> bowLore = new ArrayList<>();
-            bowLore.add(ChatColor.LIGHT_PURPLE + "Forged in the depths of the void");
-            bowLore.add(ChatColor.LIGHT_PURPLE + "A weapon of immense power");
-            bowMeta.setLore(bowLore);
+            bowMeta.setDisplayName(ChatColor.LIGHT_PURPLE + "§l✧ Void Striker ✧");
             bowMeta.addEnchant(org.bukkit.enchantments.Enchantment.ARROW_DAMAGE, 10, true);
-            bowMeta.addEnchant(org.bukkit.enchantments.Enchantment.ARROW_KNOCKBACK, 2, true);
             bowMeta.addEnchant(org.bukkit.enchantments.Enchantment.ARROW_INFINITE, 1, true);
+            bowMeta.addEnchant(Enchantment.MENDING,1, true);
+
             voidedBow.setItemMeta(bowMeta);
 
-            // Voided Armor piece
-            ItemStack voidedArmor = new ItemStack(Material.NETHERITE_CHESTPLATE);
-            ItemMeta armorMeta = voidedArmor.getItemMeta();
-            armorMeta.setDisplayName(ChatColor.DARK_PURPLE + "§l✧ Void Warrior's Plate ✧");
-            List<String> armorLore = new ArrayList<>();
-            armorLore.add(ChatColor.LIGHT_PURPLE + "Infused with void energy");
-            armorLore.add(ChatColor.LIGHT_PURPLE + "Grants supernatural protection");
-            armorMeta.setLore(armorLore);
-            armorMeta.addEnchant(org.bukkit.enchantments.Enchantment.PROTECTION_ENVIRONMENTAL, 4, true);
-            armorMeta.addEnchant(org.bukkit.enchantments.Enchantment.THORNS, 3, true);
-            voidedArmor.setItemMeta(armorMeta);
 
             // Drops
             deathLocation.getWorld().dropItemNaturally(deathLocation, voidedBow);
-            deathLocation.getWorld().dropItemNaturally(deathLocation, voidedArmor);
             deathLocation.getWorld().dropItemNaturally(deathLocation, VoidedBanner());
+            deathLocation.getWorld().dropItemNaturally(deathLocation, CrearVoidedShard(16));
 
             // Efecto de muerte épico
             deathLocation.getWorld().strikeLightningEffect(deathLocation);
@@ -421,8 +403,8 @@ public class VoidedKnight implements Listener {
                 if (player.getLocation().distance(deathLocation) <= 50) {
                     player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
                     player.sendTitle(
-                            ChatColor.DARK_PURPLE + "§l✧ Voided Knight Defeated ✧",
-                            ChatColor.LIGHT_PURPLE + "The void grows quiet...",
+                            ChatColor.DARK_PURPLE + "§l✧ El Voided Knight fue derrotado ✧",
+                            ChatColor.LIGHT_PURPLE + "...",
                             10,
                             70,
                             20

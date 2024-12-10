@@ -198,7 +198,7 @@ public class ItemsRecipes implements Listener {
         ItemStack s = VoidedItems.CrearVoidedIngot();
         ShapedRecipe recipe = new ShapedRecipe(NamespacedKey.minecraft("voided_ingot"), s);
         recipe.shape("GGG", "GGG", "GGG");
-        recipe.setIngredient('G', new RecipeChoice.ExactChoice(VoidedItems.CrearVoidedShard()));
+        recipe.setIngredient('G', new RecipeChoice.ExactChoice(VoidedItems.CrearVoidedShard(1)));
         plugin.getServer().addRecipe(recipe);
     }
 

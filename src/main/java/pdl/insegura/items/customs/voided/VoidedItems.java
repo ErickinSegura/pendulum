@@ -19,8 +19,8 @@ public class VoidedItems {
     public static String shardName = MessageUtils.colorMessage("&d&lVoided Shard");
     public static String ingotName = MessageUtils.colorMessage("&d&lVoided Ingot");
 
-    public static ItemStack CrearVoidedShard() {
-        ItemStack s = new ItemStack(new ItemStack(Material.NETHERITE_SCRAP,1));
+    public static ItemStack CrearVoidedShard(int amount) {
+        ItemStack s = new ItemStack(new ItemStack(Material.NETHERITE_SCRAP,amount));
         ItemMeta meta = s.getItemMeta();
         meta.setDisplayName(shardName);
         meta.setCustomModelData(1);
