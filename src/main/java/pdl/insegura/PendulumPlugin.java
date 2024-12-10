@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.CommandCompletion;
 import pdl.insegura.commands.PendulumCommand;
 import pdl.insegura.listeners.ArmorListener;
+import pdl.insegura.listeners.FurnaceListener;
 import pdl.insegura.listeners.PlayerListeners;
 import pdl.insegura.listeners.end.EndManager;
 import pdl.insegura.listeners.mobs.MobListener;
@@ -56,6 +57,7 @@ public class PendulumPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
         getServer().getPluginManager().registerEvents(new StructureGenerator(this), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
+        getServer().getPluginManager().registerEvents(new FurnaceListener(), this);
 
     }
 

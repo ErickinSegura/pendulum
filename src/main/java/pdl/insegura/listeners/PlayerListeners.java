@@ -199,6 +199,8 @@ public class PlayerListeners implements Listener {
         if (sleepingPlayers.size() >= neededPlayers) {
             Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
                 player.getWorld().setTime(0L);
+                player.getWorld().setStorm(false);
+                player.getWorld().setThundering(false);
                 player.setStatistic(Statistic.TIME_SINCE_REST, 0);
                 getServer().broadcastMessage(MessageUtils.colorMessage("&d&lLa noche ha pasado"));
                 sleepingPlayers.clear();
@@ -216,6 +218,14 @@ public class PlayerListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onConsume(PlayerItemConsumeEvent event) {
+
+        if (settings.getDia() >= 20){
+            if (event.getItem().getType().equals(Material.GOLDEN_CARROT)){
+                event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HARM, 1, 10, true, false));
+            }
+        }
+
+
         if (!event.getItem().hasItemMeta() || !event.getItem().getItemMeta().hasDisplayName()) {
             return;
         }
@@ -226,6 +236,8 @@ public class PlayerListeners implements Listener {
         } else if (itemName.equalsIgnoreCase(MessageUtils.colorMessage(VOIDED_APPLE_NAME))) {
             handleVoidedAppleConsumption(event.getPlayer());
         }
+
+
     }
 
     private void handleDirtyHearthyConsumption(Player player) {
@@ -331,7 +343,6 @@ public class PlayerListeners implements Listener {
         }
     }
 
-    // Helper method to check if player has totem in either hand
     private boolean hasTotem(Player player) {
         Material totemMaterial = Material.TOTEM_OF_UNDYING;
         return player.getInventory().getItemInMainHand().getType() == totemMaterial ||
@@ -366,4 +377,50 @@ public class PlayerListeners implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onNetherPortalUse(PlayerPortalEvent event) {
+
+        if (settings.getDia() < 20) {
+            return;
+        }
+
+        if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+            return;
+        }
+
+        // Jugador que usa el portal
+        Player player = event.getPlayer();
+
+        // Probabilidad del 1%
+        double randomChance = Math.random();
+        if (randomChance < 0.81) { // 1% de probabilidad
+            Location destination = event.getTo();
+            World world = destination.getWorld();
+
+            Bukkit.getScheduler().runTaskLater(PendulumPlugin.getInstance(), () -> {
+                // Generar coordenadas aleatorias en un radio de 100 bloques
+                double offsetX = (Math.random() * 200) - 100; // Rango: -100 a 100
+                double offsetZ = (Math.random() * 200) - 100; // Rango: -100 a 100
+
+                Location randomLocation = destination.clone().add(offsetX, 0, offsetZ);
+
+                // Ajustar la ubicación Y para que esté en una posición segura
+                int playerY = player.getLocation().getBlockY();
+                randomLocation.setY(playerY);
+
+                // Teletransportar al jugador a la ubicación aleatoria
+                player.teleport(randomLocation);
+
+                // Mensaje al jugador
+                player.sendMessage(MessageUtils.colorMessage("&c¡El portal del Nether te ha llevado a una ubicación aleatoria!"));
+
+                // Efectos visuales/sonoros opcionales
+                world.spawnParticle(Particle.PORTAL, randomLocation, 50, 1, 1, 1, 0.1);
+                world.playSound(randomLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+            }, 20L); // Esperar 1 segundo (20 ticks)
+        }
+    }
+
+
 }

@@ -759,17 +759,6 @@ public class EndManager implements Listener {
         }
     }
 
-    @EventHandler
-    public void onDragonDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof EnderDragon) {
-            event.getDrops().clear();
-            // Mejores drops al matar a la dragona
-            event.getDrops().add(new ItemStack(Material.DRAGON_EGG, 1));
-            event.getDrops().add(new ItemStack(Material.ELYTRA, 1));
-            event.getDrops().add(new ItemStack(Material.DRAGON_HEAD, 1));
-
-        }
-    }
 
     // Mantener los métodos originales de agua y elytras
     @EventHandler
@@ -797,11 +786,12 @@ public class EndManager implements Listener {
         int chunkX = chunk.getX() * 16;
         int chunkZ = chunk.getZ() * 16;
 
+        // Si está fuera del área principal, no hacemos cambios
         if (chunkX > 100 || chunkX < -100 || chunkZ > 100 || chunkZ < -100) {
             return;
         }
 
-        // Manejar item frames con elytras
+        // Manejar item frames con elytras en la isla principal
         for (Entity entity : chunk.getEntities()) {
             if (entity instanceof ItemFrame frame && frame.getItem().getType() == Material.ELYTRA) {
                 ItemStack s = new ItemStack(Material.ELYTRA);
@@ -810,23 +800,39 @@ public class EndManager implements Listener {
             }
         }
 
-        // Transformar end stone en la isla principal
         List<Block> endStoneBlocks = new ArrayList<>();
+        List<Block> obsidianBlocks = new ArrayList<>();
+
+        // Recorrer los bloques del chunk en la isla principal
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 for (int y = 0; y < 256; y++) {
                     Block block = chunk.getBlock(x, y, z);
-                    if (block.getType() == Material.END_STONE) {
+                    Material type = block.getType();
+
+                    // Transformación de end stone a end stone bricks
+                    if (type == Material.END_STONE) {
                         endStoneBlocks.add(block);
+                    }
+
+                    // Transformar obsidiana (torres) en bedrock
+                    if (type == Material.OBSIDIAN) {
+                        obsidianBlocks.add(block);
                     }
                 }
             }
         }
 
-        int blocksToChange = (int)(endStoneBlocks.size() * 0.25);
+        // Transformar una parte de la end stone a end stone bricks
+        int blocksToChange = (int) (endStoneBlocks.size() * 0.25);
         Collections.shuffle(endStoneBlocks, random);
         for (int i = 0; i < blocksToChange; i++) {
             endStoneBlocks.get(i).setType(Material.END_STONE_BRICKS);
+        }
+
+        // Transformar obsidiana a bedrock (toda la obsidiana encontrada)
+        for (Block obsidian : obsidianBlocks) {
+            obsidian.setType(Material.BEDROCK);
         }
     }
 

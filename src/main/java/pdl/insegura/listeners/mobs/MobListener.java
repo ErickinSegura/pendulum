@@ -36,7 +36,6 @@ public class MobListener implements Listener{
         if (event.getEntity() instanceof Shulker) {
             event.getDrops().clear();
             double rand = random.nextDouble();
-            getServer().broadcastMessage("Probabiilidad: " +  rand);
             if (rand < 0.20) {
                 event.getDrops().add(new ItemStack(Material.SHULKER_SHELL, 1));
             }

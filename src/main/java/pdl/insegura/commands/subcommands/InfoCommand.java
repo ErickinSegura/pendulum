@@ -37,16 +37,6 @@ public class InfoCommand implements SubCommand {
         sendStatistic(player, "Jugadores Online", "&d" + playersOnline + " &7conectados");
         sendStatistic(player, "Tu Equipo", equipo);
         sendStatistic(player, "Estado del Reto", getRetoStatus(retoCumplido));
-
-        // Información adicional según el estado del reto
-        if (retoCumplido) {
-            player.sendMessage("");
-            player.sendMessage(MessageUtils.colorMessage("&8└ &a¡Felicitaciones! &7Has completado el reto actual"));
-        } else {
-            player.sendMessage("");
-            player.sendMessage(MessageUtils.colorMessage("&8└ &7Usa &d/pdl reto &7para ver los requisitos"));
-        }
-
         // Pie de página
         player.sendMessage("");
         player.sendMessage(MessageUtils.colorMessage("&8&l≫ &d&l&k|&r &7Actualizado: &d" + getCurrentTime() + " &d&l&k|&r &8&l≪"));
