@@ -46,14 +46,12 @@ public class StructureGenerator implements Listener {
         }
         // Check if the world is the Overworld
         if (event.getWorld().getEnvironment() != Environment.NORMAL) {
-            return; // Do nothing if it's not the Overworld
+            return;
         }
 
         int rand = random.nextInt(1000);
         Chunk chunk = event.getChunk();
 
-
-        // Probability of 1/500 to generate a floating island
         if (rand == 0) {
             generateFloatingIsland(chunk);
         }
