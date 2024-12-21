@@ -201,6 +201,7 @@ public class InfernalGuardian implements Listener {
         Location loc = event.getEntity().getLocation();
         World world = loc.getWorld();
 
+
         // Drops garantizados
         world.dropItemNaturally(loc, new ItemStack(Material.NETHERITE_INGOT));
 

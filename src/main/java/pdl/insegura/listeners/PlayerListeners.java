@@ -225,6 +225,7 @@ public class PlayerListeners implements Listener {
         if (settings.getDia() >= 20){
             if (event.getItem().getType().equals(Material.GOLDEN_CARROT)){
                 event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HARM, 1, 10, true, false));
+                advancementsListener.obtainAdvancement(event.getPlayer(), "kills/carrot");
             }
         }
 
@@ -271,6 +272,7 @@ public class PlayerListeners implements Listener {
     private void handleVoidedAppleConsumption(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, 12000, 1, true, false));
         player.sendMessage(MessageUtils.colorMessage("&dVida Boosteada por 10 minutos."));
+        advancementsListener.obtainAdvancement(player, "voided/voided_apple");
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -285,6 +287,7 @@ public class PlayerListeners implements Listener {
         if (settings.getDia() >= 15 && event.getNumHatches() > 0) {
             event.setHatching(false);
             if (Math.random() < WITHER_SPAWN_CHANCE) {
+
                 spawnWitherFromEgg(event);
             }
         }
@@ -293,6 +296,8 @@ public class PlayerListeners implements Listener {
     private void spawnWitherFromEgg(PlayerEggThrowEvent event) {
         Wither wither = (Wither) event.getEgg().getLocation().getWorld().spawnEntity(event.getEgg().getLocation(), EntityType.WITHER);
         wither.setCustomName("Pollito Bebé de " + event.getPlayer().getName());
+
+        advancementsListener.obtainAdvancement(event.getPlayer(), "randoms/chick");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.0f);
@@ -425,6 +430,22 @@ public class PlayerListeners implements Listener {
                 world.spawnParticle(Particle.PORTAL, randomLocation, 50, 1, 1, 1, 0.1);
                 world.playSound(randomLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
             }, 20L); // Esperar 1 segundo (20 ticks)
+        }
+    }
+
+    @EventHandler
+    public void onPlayerKillOtherPlayer(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        Player killer = player.getKiller();
+        if (killer != null) {
+            advancementsListener.obtainAdvancement(killer, "kills/kill");
+            if (killer.getName().equals("RostamCTM")) {
+                advancementsListener.obtainAdvancement(killer, "kills/rostam");
+            } else if (killer.getName().equals("AdachiPersona4")) {
+                advancementsListener.obtainAdvancement(killer, "kills/norman");
+            } else if (killer.getName().equals("iPancrema")) {
+                advancementsListener.obtainAdvancement(killer, "kills/admin");
+            }
         }
     }
 

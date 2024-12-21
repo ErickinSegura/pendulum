@@ -46,9 +46,11 @@ public class ArmorListener implements Listener {
 
     private void updatePlayerEffects(Player player) {
         if (isWearingFullAssaultArmor(player)) {
+            advancementsListener.obtainAdvancement(player, "armors/assault");
             player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0, false, false));
         } else if (isWearingFullGuardianArmor(player)) {
+            advancementsListener.obtainAdvancement(player, "armors/guardian");
             player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, 0, false, false));
             player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0, false, false));
         } else {

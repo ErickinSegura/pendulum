@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import pdl.insegura.PendulumPlugin;
+import pdl.insegura.listeners.AdvancementsListener;
 
 import java.util.*;
 
@@ -36,6 +37,11 @@ public class VoidedKnight implements Listener {
     private Map<UUID, Integer> phaseCounters = new HashMap<>();
     private static final int MAX_MINIONS = 10;
     private Map<UUID, Integer> attackPatternCounters = new HashMap<>();
+
+    PendulumPlugin pendulumPlugin = PendulumPlugin.getInstance();
+
+
+    AdvancementsListener advancementsListener = new AdvancementsListener(pendulumPlugin);
 
     public VoidedKnight(Plugin plugin) {
         this.plugin = plugin;
@@ -369,6 +375,7 @@ public class VoidedKnight implements Listener {
             entity.getWorld().spawnParticle(Particle.DRAGON_BREATH, deathLocation, 50, 0.5, 0.5, 0.5, 0.1);
             entity.getWorld().playSound(deathLocation, Sound.ENTITY_PHANTOM_DEATH, 1.0f, 0.5f);
         } else if (bossBars.containsKey(entity.getUniqueId())) {
+            advancementsListener.obtainAdvancement(entity.getKiller(), "voided/voided_knight");
             // Muerte del Voided Knight
             BossBar bossBar = bossBars.get(entity.getUniqueId());
             bossBar.removeAll();

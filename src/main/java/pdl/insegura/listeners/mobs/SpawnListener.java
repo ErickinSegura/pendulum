@@ -1,13 +1,11 @@
 package pdl.insegura.listeners.mobs;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -17,7 +15,6 @@ import pdl.insegura.listeners.mobs.customs.ExplosivePenguinVillager;
 import pdl.insegura.utils.PendulumSettings;
 import pdl.insegura.listeners.mobs.customs.InfernalGuardian;
 
-import java.util.List;
 import java.util.Random;
 
 public class SpawnListener implements Listener {

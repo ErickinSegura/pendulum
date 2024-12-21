@@ -7,10 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import pdl.insegura.commands.CommandCompletion;
 import pdl.insegura.commands.PendulumCommand;
 import pdl.insegura.items.PotionsStacker;
-import pdl.insegura.listeners.AdvancementsListener;
-import pdl.insegura.listeners.ArmorListener;
-import pdl.insegura.listeners.FurnaceListener;
-import pdl.insegura.listeners.PlayerListeners;
+import pdl.insegura.listeners.*;
 import pdl.insegura.listeners.end.EndManager;
 import pdl.insegura.listeners.mobs.MobListener;
 import pdl.insegura.listeners.mobs.SpawnListener;
@@ -66,9 +63,23 @@ public class PendulumPlugin extends JavaPlugin {
         List<String> advancementsPaths = Arrays.asList(
                 "pendulum",
                 "items/oro",
-                "items/dirty",
+                "kills/kill",
+                "kills/rostam",
+                "kills/norman",
+                "kills/admin",
+                "items/dirty", /*Dia 5*/
                 "items/hearthy",
-                "items/dirtiest"
+                "items/dirtiest",
+                "armors/agile",
+                "armors/reinforced",
+                "armors/voided", /*Dia 10*/
+                "voided/voided_scrap",
+                "voided/voided_apple",
+                "voided/voided_knight",
+                "armors/guardian", /*Dia 15*/
+                "armors/assault",
+                "randoms/chick",
+                "kills/carrot"
         );
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
@@ -87,12 +98,15 @@ public class PendulumPlugin extends JavaPlugin {
     }
 
     private void registerEvents() {
+        AdvancementsListener advancementsListener = new AdvancementsListener(this);
         getServer().getPluginManager().registerEvents(new PlayerListeners(this), this);
         getServer().getPluginManager().registerEvents(new ItemsRecipes(this), this);
         getServer().getPluginManager().registerEvents(new StructureGenerator(this), this);
         getServer().getPluginManager().registerEvents(new ArmorListener(), this);
         getServer().getPluginManager().registerEvents(new FurnaceListener(), this);
         getServer().getPluginManager().registerEvents(new AdvancementsListener(this), this);
+        getServer().getPluginManager().registerEvents(new ArmorCheckListener(this, advancementsListener), this);
+        getServer().getPluginManager().registerEvents(new ItemPickupListener(), this);
     }
 
     private void registerRecipes() {
