@@ -1,0 +1,19 @@
+{
+  "parent": "pendulum:mi_advancement",
+  "display": {
+    "title": {"text": "Casco Poderoso"},
+    "description": {"text": "Has logrado fabricar un casco especial"},
+    "icon": {
+      "item": "minecraft:diamond_helmet"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "conseguir_casco": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

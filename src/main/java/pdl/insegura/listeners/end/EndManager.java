@@ -781,23 +781,22 @@ public class EndManager implements Listener {
             return;
         }
 
-        // Verificar si el chunk está en el rango de la isla principal (-100 a 100 en X y Z)
         Chunk chunk = e.getChunk();
-        int chunkX = chunk.getX() * 16;
-        int chunkZ = chunk.getZ() * 16;
 
-        // Si está fuera del área principal, no hacemos cambios
-        if (chunkX > 100 || chunkX < -100 || chunkZ > 100 || chunkZ < -100) {
-            return;
-        }
-
-        // Manejar item frames con elytras en la isla principal
         for (Entity entity : chunk.getEntities()) {
             if (entity instanceof ItemFrame frame && frame.getItem().getType() == Material.ELYTRA) {
                 ItemStack s = new ItemStack(Material.ELYTRA);
                 s.setDurability((short) 431);
                 frame.setItem(s);
             }
+        }
+
+        int chunkX = chunk.getX() * 16;
+        int chunkZ = chunk.getZ() * 16;
+
+        // Si está fuera del área principal, no hacemos cambios
+        if (chunkX > 100 || chunkX < -100 || chunkZ > 100 || chunkZ < -100) {
+            return;
         }
 
         List<Block> endStoneBlocks = new ArrayList<>();
@@ -835,7 +834,5 @@ public class EndManager implements Listener {
             obsidian.setType(Material.BEDROCK);
         }
     }
-
-
 
 }

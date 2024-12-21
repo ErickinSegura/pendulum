@@ -1,35 +1,53 @@
-# Configuración de Pendulum
 mundo:
-  dia: 5
+  dia: 20
   jugadoresNoche: 1
-
-# Ops
 permisos:
   - iPancrema
-
-# Reto de la semana
 reto:
-  desafio: "Consigue 320 cañas de azúcar"
-  premio: "2 tótems de la inmortalidad"
-  castigo: "Perderá tu equipo 1 contenedor de vida"
-  cantidadDesafio: 320
+  desafio: Consigue 128 troncos de roble
+  premio: 2 tótems de la inmortalidad
+  castigo: Tu equipo tendrá que regalar 3 totems
+  cantidadDesafio: 128
   cantidadPremio: 2
-  materialDesafio: SUGAR_CANE
+  materialDesafio: OAK_LOG
   materialPremio: TOTEM_OF_UNDYING
-  # Lista de retos de la semana, deben de ser 10
-  retos:
-    - "Consigue 1 cañas de azúcar"
-    - "Consigue 2 cañas de azúcar"
-    - "Consigue 3 cañas de azúcar"
-    - "Consigue 4 cañas de azúcar"
-    - "Consigue 5 cañas de azúcar"
-    - "Consigue 6 cañas de azúcar"
-    - "Consigue 7 cañas de azúcar"
-    - "Consigue 8 cañas de azúcar"
-    - "Consigue 9 cañas de azúcar"
-    - "Consigue 10 cañas de azúcar"
   castigos:
-    dia0:
-      - iPancrema
-
-
+    - Perderá tu equipo 1 contenedor de vida
+    - Tu equipo no podrá usar Elytra por 1 día
+    - Tu equipo tendrá que donar 5 diamantes
+    - Tu equipo perderá acceso al End por 1 día
+    - Tu equipo deberá construir un monumento
+    - Tu equipo tendrá que regalar 3 totems
+    - Tu equipo no podrá usar portales del Nether por 1 día
+    - Tu equipo deberá organizar un evento PvP
+  retos:
+    - titulo: Consigue 64 piedra
+      cantidad: 64
+      material: STONE
+    - titulo: Consigue 32 lingotes de hierro
+      cantidad: 32
+      material: IRON_INGOT
+    - titulo: Consigue 16 diamantes
+      cantidad: 16
+      material: DIAMOND
+    - titulo: Consigue 128 troncos de roble
+      cantidad: 128
+      material: OAK_LOG
+    - titulo: Consigue 64 carbón
+      cantidad: 64
+      material: COAL
+    - titulo: Consigue 32 polvo de redstone
+      cantidad: 32
+      material: REDSTONE
+    - titulo: Consigue 16 lapislázuli
+      cantidad: 16
+      material: LAPIS_LAZULI
+    - titulo: Consigue 8 esmeraldas
+      cantidad: 8
+      material: EMERALD
+    - titulo: Consigue 4 lingotes de netherita
+      cantidad: 4
+      material: NETHERITE_INGOT
+    - titulo: Consigue 256 bloques de tierra
+      cantidad: 256
+      material: DIRT

@@ -22,13 +22,12 @@ import pdl.insegura.PendulumPlugin;
 import pdl.insegura.utils.DeathMessages;
 import pdl.insegura.utils.MessageUtils;
 import pdl.insegura.utils.PendulumSettings;
-
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import static org.bukkit.Bukkit.getPluginManager;
 import static org.bukkit.Bukkit.getServer;
 
 public class PlayerListeners implements Listener {
@@ -48,9 +47,13 @@ public class PlayerListeners implements Listener {
     private final PendulumSettings settings = PendulumSettings.getInstance();
     private final NamespacedKey dirtyHearthyKey;
 
+    PendulumPlugin plugin = PendulumPlugin.getInstance();
+    AdvancementsListener advancementsListener = new AdvancementsListener(plugin);
+
     public PlayerListeners(PendulumPlugin plugin) {
         this.dirtyHearthyKey = new NamespacedKey(plugin, "DirtyCount");
     }
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeath(PlayerDeathEvent event) {
@@ -247,10 +250,12 @@ public class PlayerListeners implements Listener {
         if (count >= DIRTY_HEARTHY_MAX) {
             player.sendMessage(MessageUtils.colorMessage("&cYa has consumido 5 Dirty Hearthy..."));
             player.sendMessage(MessageUtils.colorMessage("&cDesperdiciando una cabeza, eh?"));
+            advancementsListener.obtainAdvancement(player, "items/dirtiest");
             return;
         }
 
         count++;
+        advancementsListener.obtainAdvancement(player, "items/dirty");
         data.set(dirtyHearthyKey, PersistentDataType.INTEGER, count);
         player.sendMessage(MessageUtils.colorMessage("&cHas consumido " + count + "/5 Dirty Hearthy"));
 
@@ -259,6 +264,7 @@ public class PlayerListeners implements Listener {
 
         if (count == DIRTY_HEARTHY_MAX) {
             player.sendMessage(MessageUtils.colorMessage("&a¡Has alcanzado el máximo de 5 Dirty Hearthy!"));
+            advancementsListener.obtainAdvancement(player, "items/hearthy");
         }
     }
 

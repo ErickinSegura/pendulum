@@ -28,7 +28,7 @@ public class GiveCommand implements SubCommand {
             case "guardian_armor" -> giveGuardianArmor(player);
             case "voided_tools" -> giveVoidedTools(player);
             case "voided_ingot" -> giveVoidedIngot(player);
-            case "voidad_shard" -> giveVoidedShard(player);
+            case "voided_shard" -> giveVoidedShard(player);
             case "dirty_hearty" -> giveDirtyHearty(player);
             case "oro_doble" -> giveOroDoble(player);
             default -> player.sendMessage(MessageUtils.colorMessage("&cItem no reconocido"));

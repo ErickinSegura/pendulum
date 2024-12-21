@@ -25,7 +25,8 @@ public class ArmorListener implements Listener {
     private static final String GUARDIAN_BOOTS_NAME = MessageUtils.colorMessage("&d&lVoided Guardian Boots");
 
 
-
+    PendulumPlugin plugin = PendulumPlugin.getInstance();
+    AdvancementsListener advancementsListener = new AdvancementsListener(plugin);
 
 
     @EventHandler

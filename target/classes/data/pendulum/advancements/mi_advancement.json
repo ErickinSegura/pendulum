@@ -1,0 +1,19 @@
+{
+  "display": {
+    "title": {"text": "Mi Primer Advancement"},
+    "description": {"text": "Has logrado algo importante!"},
+    "icon": {
+      "item": "minecraft:diamond"
+    },
+    "frame": "task",
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "got_diamond": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
