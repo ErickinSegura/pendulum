@@ -60,11 +60,11 @@ public class PlayerListeners implements Listener {
         Player player = event.getEntity();
         Location location = getDeathLocation(player);
 
+        displayDeathTitle();
         broadcastDeathSound();
         handleTeamEffects(player);
         broadcastDeathMessages(player, location);
         createDeathMemorial(location, player);
-        displayDeathTitle();
     }
 
     private Location getDeathLocation(Player player) {
@@ -150,8 +150,13 @@ public class PlayerListeners implements Listener {
     }
 
     private void displayDeathTitle() {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "animation true 3 0 10");
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "animation true 1 0 48");
+        }, 20L); // Ejecutar después de 1 tick
     }
+
+
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onSleep(PlayerBedEnterEvent event) {
