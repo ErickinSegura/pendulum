@@ -1,0 +1,14 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "item/netherite_leggings"
+	},
+	
+	"overrides": [
+		{"predicate": {"custom_model_data":1}, "model": "item/reinforced/3"},
+		{"predicate": {"custom_model_data":2}, "model": "item/agile/3"},
+		{"predicate": {"custom_model_data":3}, "model": "item/voided/3"},
+		{"predicate": {"custom_model_data":4}, "model": "item/assault/3"},
+		{"predicate": {"custom_model_data":5}, "model": "item/guardian/3"}
+	]
+}

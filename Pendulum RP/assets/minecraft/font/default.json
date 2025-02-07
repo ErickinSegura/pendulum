@@ -1,0 +1,526 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_01.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE000"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_02.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE001"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_03.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE002"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_04.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE003"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_05.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE004"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_06.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE005"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_07.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE006"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_08.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE007"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_09.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE008"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_10.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE009"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_11.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE010"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_12.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE011"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_13.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE012"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_14.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE013"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_15.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE014"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_16.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE015"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_17.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE016"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_18.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE017"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_19.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE018"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_20.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE019"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_21.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE020"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_22.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE021"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_23.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE022"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_24.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE023"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_25.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE024"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_26.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE025"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_27.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE026"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_28.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE027"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_29.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE028"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_30.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE029"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_31.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE030"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_32.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE031"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_33.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE032"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_34.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE033"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_35.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE034"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_36.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE035"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_37.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE036"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_38.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE037"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_39.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE038"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_40.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE039"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_41.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE040"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_42.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE041"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_43.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE042"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_44.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE043"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_45.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE044"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_46.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE045"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_47.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE046"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_48.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE047"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:animation/death/clock_49.png",
+      "ascent": 30,
+      "height": 60,
+      "chars": [
+        "\uE048"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/admin.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE900"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/host.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE901"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/invitado.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE902"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:ranks/miembro.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE903"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:teams/valhalla.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE904"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:teams/yavarianos.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE905"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:teams/deltak.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE906"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:teams/tortas.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE907"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:teams/miners.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\uE908"
+      ]
+    }
+  ]
+}

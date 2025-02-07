@@ -1,0 +1,37 @@
+{
+	"muerte": {
+		"sounds": [
+			"muerte/muerte"
+		]
+	},
+	"inicio": {
+		"sounds": [
+			"inicio/inicio"
+		]
+	},
+	"victory": {
+		"sounds": [
+			"gulag/victory"
+		]
+	},
+	"impact": {
+		"sounds": [
+			"gulag/impact"
+		]
+	},
+	"piggies1": {
+		"sounds": [
+			"piggies/badpiggies1"
+		]
+	},
+	"piggies2": {
+		"sounds": [
+			"piggies/badpiggies2"
+		]
+	},
+	"piggies3": {
+		"sounds": [
+			"piggies/badpiggies3"
+		]
+	}
+}

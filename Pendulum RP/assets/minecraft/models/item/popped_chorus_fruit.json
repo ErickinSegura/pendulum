@@ -1,0 +1,12 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "item/popped_chorus_fruit"
+	},
+	
+	"overrides": [
+		{"predicate": {"custom_model_data":1}, "model": "item/popped_chorus_fruit/1"},
+		{"predicate": {"custom_model_data":2}, "model": "item/popped_chorus_fruit/2"},
+		{"predicate": {"custom_model_data":3}, "model": "item/popped_chorus_fruit/3"}
+	]
+}
