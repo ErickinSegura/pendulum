@@ -62,8 +62,8 @@
 
 ## 🎨 Capturas de Pantalla
 
-![Armaduras]()
-![Spawn]()
+![Armaduras](https://github.com/ErickinSegura/pendulum/blob/master/img/armors.png?raw=true)
+![Spawn](https://github.com/ErickinSegura/pendulum/blob/master/img/spawn.png?raw=true)
 
 ---
 
@@ -74,4 +74,4 @@ Igualmente muchas gracias a [YoungTizaa](https://www.instagram.com/youngtizaa/) 
 
 --- 
 
-![Pendulum]()
+![Pendulum](https://github.com/ErickinSegura/pendulum/blob/master/img/XSogo.png?raw=true)
